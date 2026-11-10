@@ -1,4 +1,4 @@
-# Maintainer: Progressive Chat Team
+# Maintainer: PCP Team
 # Build from local git for development/testing
 
 _dir="$(dirname "$(realpath "${BASH_SOURCE[0]}")")/../.."
@@ -8,18 +8,18 @@ pkgver=0.1.0
 pkgrel=1
 pkgdesc="A terminal Matrix client with E2EE, multi-format REST API, and ncurses TUI"
 arch=('x86_64')
-url="https://github.com/progressive-chat/progressive-cli"
+url="https://github.com/pcp-chat/pcp-cli"
 license=('AGPL-3.0-or-later')
 depends=('gcc-libs' 'openssl' 'libolm' 'sqlite3' 'ncurses' 'nlohmann-json')
 makedepends=('cmake' 'gcc' 'make' 'pkg-config' 'git')
 optdepends=('libnotify: desktop notifications')
 
 prepare() {
-    cp -r "${_dir}" "${srcdir}/progressive-cli"
+    cp -r "${_dir}" "${srcdir}/pcp-cli"
 }
 
 build() {
-    cd "${srcdir}/progressive-cli/cppcli"
+    cd "${srcdir}/pcp-cli/cppcli"
 
     cmake -B build -S . \
         -DCMAKE_BUILD_TYPE=Release \
@@ -32,11 +32,11 @@ build() {
 }
 
 package() {
-    cd "${srcdir}/progressive-cli"
+    cd "${srcdir}/pcp-cli"
 
     install -Dm755 cppcli/build/src/matrixcli "${pkgdir}/usr/bin/matrixcli"
     install -Dm644 gomuks/LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
     install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
-    install -Dm644 packaging/arch/progressive-cli-notify.service \
-        "${pkgdir}/usr/lib/systemd/user/progressive-cli-notify.service"
+    install -Dm644 packaging/arch/pcp-cli-notify.service \
+        "${pkgdir}/usr/lib/systemd/user/pcp-cli-notify.service"
 }

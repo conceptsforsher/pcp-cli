@@ -1,6 +1,6 @@
 // src/ascii_ui.cpp — ASCII-drawn client interface for the CLI (not the TUI).
 //
-// `progressive-cli ui` draws a chat-client-like layout with plain characters:
+// `pcp-cli ui` draws a chat-client-like layout with plain characters:
 // a header, a left panel with the room list, the open room's messages in
 // the center and the member list on the right, panels separated by pipes.
 // It is a REPL: every command executes and the whole frame is redrawn —

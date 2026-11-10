@@ -19,7 +19,7 @@ Args parseArgs(int argc, char* argv[]);
 // unless --disable-formatting (or NO_COLOR=1, TERM=dumb) forces plain text.
 std::string usageText(const Args& args, bool fmt);
 void printUsage(const Args& args);
-std::string versionString();  // "progressive-cli vX.Y.Z"
+std::string versionString();  // "pcp-cli vX.Y.Z"
 void printVersion();
 
 }} // namespace matrixcli::cli

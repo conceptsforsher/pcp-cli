@@ -11,7 +11,7 @@ const STATUS_LABELS = {
 
 const STATUS_ORDER = ['proven', 'verified', 'implemented', 'awaited', 'wontadd'];
 
-const GH = 'https://github.com/progressive-chat/progressive-cli';
+const GH = 'https://github.com/pcp-chat/pcp-cli';
 
 async function boot() {
     const res = await fetch('status.json');

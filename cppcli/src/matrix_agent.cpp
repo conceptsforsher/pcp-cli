@@ -10,7 +10,7 @@
 #include "../lib/matrix/events.hpp"
 #include "../lib/util/llm_sse.hpp"
 
-#include <progressive/agent_executor.hpp>
+#include <pcp/agent_executor.hpp>
 #include <nlohmann/json.hpp>
 
 #include <cstdlib>
@@ -93,7 +93,7 @@ public:
     explicit MatrixBackend(matrix::Client* client) : _client(client) {}
 
     // The live operations need a logged-in session. In the demo TUI and
-    // the offline agent mode (`progressive-cli tui agent`) the client exists but
+    // the offline agent mode (`pcp-cli tui agent`) the client exists but
     // has no token — the tools report it clearly and the agent continues
     // with the cache-backed tools (read/search/room info).
     bool haveSession() const { return _client && _client->isLoggedIn(); }
@@ -394,10 +394,10 @@ std::string buildRoomContext(const std::string& roomId, int maxMessages) {
         bodies.push_back(e.content.value("body", ""));
         ts.push_back(e.origin_server_ts);
     }
-    return progressive::formatMessagesForAgent(senders, bodies, ts);
+    return pcp::formatMessagesForAgent(senders, bodies, ts);
 }
 
-std::string executeTool(Backend& backend, const progressive::AgentToolCall& call) {
+std::string executeTool(Backend& backend, const pcp::AgentToolCall& call) {
     std::string name = call.toolName;
     try {
         auto args = json::parse(call.argumentsJson);
@@ -601,7 +601,7 @@ Result run(const Config& cfg, Backend& backend, const std::string& task,
            const std::function<void(const std::string&)>& log) {
     Result res;
     if (cfg.key.empty()) {
-        res.error = "no API key — run './progressive-cli tui agent' for the "
+        res.error = "no API key — run './pcp-cli tui agent' for the "
                     "interactive setup, or set it in ~/.config/matrixcli/"
                     "agent.json / OPENAI_API_KEY / ANTHROPIC_API_KEY";
         return res;
@@ -609,21 +609,21 @@ Result run(const Config& cfg, Backend& backend, const std::string& task,
 
     std::string room = resolveRoomId(roomId);
 
-    progressive::AgentConfig acfg;
+    pcp::AgentConfig acfg;
     acfg.maxIterations = cfg.maxIterations;
     acfg.verbose = cfg.verbose;
-    acfg.toolsDescription = progressive::getAgentToolsSchema();
-    acfg.systemPrompt = progressive::buildAgentSystemPrompt(acfg);
+    acfg.toolsDescription = pcp::getAgentToolsSchema();
+    acfg.systemPrompt = pcp::buildAgentSystemPrompt(acfg);
     if (!cfg.extraSystem.empty()) acfg.systemPrompt += "\n" + cfg.extraSystem;
 
-    progressive::AgentState state;
+    pcp::AgentState state;
     state.task = task;
     state.roomId = room;
     state.userId = backend.selfUserId();
     if (!room.empty()) state.roomContext = buildRoomContext(room, 50);
 
     std::string lastError;
-    while (!progressive::shouldStopAgent(state, acfg)) {
+    while (!pcp::shouldStopAgent(state, acfg)) {
         if (!matrixcli::g_interrupted.load()) {
             res.error = "interrupted (Ctrl+C)";
             return res;
@@ -632,7 +632,7 @@ Result run(const Config& cfg, Backend& backend, const std::string& task,
             res.error = "interrupted (Esc)";
             return res;
         }
-        std::string prompt = progressive::buildAgentUserPrompt(state, acfg);
+        std::string prompt = pcp::buildAgentUserPrompt(state, acfg);
         if (cfg.verbose && log)
             log("[agent] iteration " + std::to_string(state.iteration + 1)
                 + ": calling " + cfg.model + " ...");
@@ -643,12 +643,12 @@ Result run(const Config& cfg, Backend& backend, const std::string& task,
             state.errorMessage = cres.error();
             break;
         }
-        state = progressive::processAgentIteration(state, cres->text);
+        state = pcp::processAgentIteration(state, cres->text);
         for (auto& call : state.pendingToolCalls) {
             if (cfg.verbose && log)
                 log("[agent] tool: " + call.toolName + " " + call.argumentsJson);
             state.conversationHistory.push_back(
-                progressive::buildToolResultText(call.toolName, executeTool(backend, call)));
+                pcp::buildToolResultText(call.toolName, executeTool(backend, call)));
         }
         state.pendingToolCalls.clear();
     }

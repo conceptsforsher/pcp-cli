@@ -1,16 +1,16 @@
 #include "test_synapse_helpers.hpp"
 
 static bool test_cross_signing_setup(const std::string& hs, TestUser& alice) {
-    auto keys = progressive::desktop::generateCrossSigningKeys();
+    auto keys = pcp::desktop::generateCrossSigningKeys();
     CHECK(!keys.masterPub.empty(), "xs-setup: keys generated");
 
     // Publish via POST /keys/device_signing/upload (the spec mechanism).
-    auto master = progressive::desktop::buildCrossSigningContent(
+    auto master = pcp::desktop::buildCrossSigningContent(
         "m.cross_signing.master", keys.masterPub, "", "", alice.userId);
-    auto self = progressive::desktop::buildCrossSigningContent(
+    auto self = pcp::desktop::buildCrossSigningContent(
         "m.cross_signing.self_signing", keys.selfPub,
         keys.masterPub, keys.masterPriv, alice.userId);
-    auto user = progressive::desktop::buildCrossSigningContent(
+    auto user = pcp::desktop::buildCrossSigningContent(
         "m.cross_signing.user_signing", keys.userPub,
         keys.masterPub, keys.masterPriv, alice.userId);
     std::string upBody = "{\"master_key\":" + master
@@ -92,7 +92,7 @@ static bool test_cross_signing_setup(const std::string& hs, TestUser& alice) {
             + "\",\"ed25519:" + std::string(did.value()) + "\":\"" + std::string(ek.value())
             + "\"},\"user_id\":\"" + std::string(uid.value()) + "\"}";
     }
-    CHECK(progressive::desktop::verifyEd25519(keys.selfPub, canonical, sskSig),
+    CHECK(pcp::desktop::verifyEd25519(keys.selfPub, canonical, sskSig),
           "xs-setup: SSK signature verifies over canonical device_keys");
     return true;
 }
@@ -314,10 +314,10 @@ static bool test_multiaccount_multidevice(const std::string& hs,
         std::vector<uint8_t> blob;
         for (int i = 0; i < 128; ++i) blob.push_back(static_cast<uint8_t>((i * 7) & 0xff));
         std::string key, iv;
-        CHECK(progressive::desktop::generateMediaKeyIv(key, iv), "media: key+iv generated");
-        auto cipher = progressive::desktop::aesCtrCrypt(blob, key, iv);
+        CHECK(pcp::desktop::generateMediaKeyIv(key, iv), "media: key+iv generated");
+        auto cipher = pcp::desktop::aesCtrCrypt(blob, key, iv);
         CHECK(!cipher.empty() && cipher != blob, "media: ciphertext differs");
-        std::string sha = progressive::desktop::sha256Base64(blob);
+        std::string sha = pcp::desktop::sha256Base64(blob);
         auto up = alice.client.uploadMedia(cipher, "test.bin", "application/octet-stream");
         std::cerr << "[media] upload status=" << up.httpStatus << " mxc=" << up.data
                   << " err=" << up.error.message << "\n";
@@ -445,7 +445,7 @@ static bool test_reset_drift(const std::string& hs) {
 }
 
 static bool test_media_roundtrip(const std::string& hs, TestUser& u) {
-    std::string payload = "progressive-core media roundtrip " + std::to_string(std::time(nullptr));
+    std::string payload = "pcp-core media roundtrip " + std::to_string(std::time(nullptr));
     std::vector<uint8_t> bytes(payload.begin(), payload.end());
     auto up = u.client.uploadMedia(bytes, "pcore-media-" + g_runSuffix + ".txt", "text/plain");
     if (!up.ok || up.data.rfind("mxc://", 0) != 0) {

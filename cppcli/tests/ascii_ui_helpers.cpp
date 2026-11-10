@@ -1,6 +1,6 @@
 // src/ascii_ui.cpp — ASCII-drawn client interface for the CLI (not the TUI).
 //
-// `progressive-cli ui` draws a chat-client-like layout with plain characters:
+// `pcp-cli ui` draws a chat-client-like layout with plain characters:
 // a header, a left panel with the room list, the open room's messages in
 // the center and the member list on the right, panels separated by pipes.
 // It is a REPL: every command executes and the whole frame is redrawn —
@@ -114,11 +114,11 @@ void sortRoomsByActivity(UiState& st) {
 
 // Human-readable proxy state from the core's global config.
 std::string proxyLabelText() {
-    auto p = progressive::desktop::getGlobalProxy();
+    auto p = pcp::desktop::getGlobalProxy();
     if (!p.enabled || p.host.empty()) return "off";
     std::string type = "socks5h";
-    if (p.type == progressive::desktop::ProxyConfig::Type::Socks5) type = "socks5";
-    else if (p.type == progressive::desktop::ProxyConfig::Type::Http) type = "http";
+    if (p.type == pcp::desktop::ProxyConfig::Type::Socks5) type = "socks5";
+    else if (p.type == pcp::desktop::ProxyConfig::Type::Http) type = "http";
     return "on (" + type + " " + p.host + ":" + std::to_string(p.port) + ")";
 }
 

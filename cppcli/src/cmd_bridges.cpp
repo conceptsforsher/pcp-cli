@@ -43,7 +43,7 @@ int cmdTdBridge(const matrixcli::cli::Args& args) {
         // matrixcli td <subcommand> [args...]
         using namespace matrixcli;
         if (args.positional.empty()) {
-            std::cerr << "Usage: progressive-cli td <login|phone|code|password|chats|msg|history>" << std::endl;
+            std::cerr << "Usage: pcp-cli td <login|phone|code|password|chats|msg|history>" << std::endl;
             return 1;
         }
         std::string sub = args.positional[0];
@@ -55,16 +55,16 @@ int cmdTdBridge(const matrixcli::cli::Args& args) {
             g_tdlib.setTdlibParams(creds.first, creds.second);
             std::cout << "TDLib initialized. Run: matrixcli td phone +123****7890" << std::endl;
         } else if (sub == "phone") {
-            if (args.positional.size() < 2) { std::cerr << "Usage: progressive-cli td phone +123****7890" << std::endl; return 1; }
+            if (args.positional.size() < 2) { std::cerr << "Usage: pcp-cli td phone +123****7890" << std::endl; return 1; }
             if (!g_tdlib.isAvailable() && !g_tdlib.initialize()) { std::cerr << "TDLib not available" << std::endl; return 1; }
             g_tdlib.sendPhoneNumber(args.positional[1]);
             std::cout << "Code sent. Run: matrixcli td code XXXXX" << std::endl;
         } else if (sub == "code") {
-            if (args.positional.size() < 2) { std::cerr << "Usage: progressive-cli td code XXXXX" << std::endl; return 1; }
+            if (args.positional.size() < 2) { std::cerr << "Usage: pcp-cli td code XXXXX" << std::endl; return 1; }
             g_tdlib.sendAuthCode(args.positional[1]);
             std::cout << "Code sent. If 2FA: matrixcli td password yourpassword" << std::endl;
         } else if (sub == "password" || sub == "2fa") {
-            if (args.positional.size() < 2) { std::cerr << "Usage: progressive-cli td password your2fa" << std::endl; return 1; }
+            if (args.positional.size() < 2) { std::cerr << "Usage: pcp-cli td password your2fa" << std::endl; return 1; }
             g_tdlib.sendPassword(args.positional[1]);
             std::cout << "2FA sent. Run: matrixcli td chats" << std::endl;
         } else if (sub == "chats") {
@@ -74,7 +74,7 @@ int cmdTdBridge(const matrixcli::cli::Args& args) {
                 std::cout << "  [" << c.id << "] " << c.title << " (" << c.type << ")" << " unread:" << c.unread_count << std::endl;
             }
         } else if (sub == "msg" || sub == "send") {
-            if (args.positional.size() < 3) { std::cerr << "Usage: progressive-cli td msg <chat_id> <text>" << std::endl; return 1; }
+            if (args.positional.size() < 3) { std::cerr << "Usage: pcp-cli td msg <chat_id> <text>" << std::endl; return 1; }
             int64_t chatId = std::stoll(args.positional[1]);
             std::string text;
             for (size_t i = 2; i < args.positional.size(); i++) { if (i > 2) text += " "; text += args.positional[i]; }
@@ -82,7 +82,7 @@ int cmdTdBridge(const matrixcli::cli::Args& args) {
             g_tdlib.sendMessage(chatId, text);
             std::cout << "Sent to chat " << chatId << std::endl;
         } else if (sub == "history" || sub == "view") {
-            if (args.positional.size() < 2) { std::cerr << "Usage: progressive-cli td history <chat_id> [limit]" << std::endl; return 1; }
+            if (args.positional.size() < 2) { std::cerr << "Usage: pcp-cli td history <chat_id> [limit]" << std::endl; return 1; }
             int64_t chatId = std::stoll(args.positional[1]);
             int limit = args.positional.size() >= 3 ? std::stoi(args.positional[2]) : 20;
             if (g_tdlib.authState() != tdlib::TdAuthState::Ready) { std::cerr << "Not authorized" << std::endl; return 1; }
@@ -105,7 +105,7 @@ int cmdIrcBridge(const matrixcli::cli::Args& args) {
 
         using namespace matrixcli;
         if (args.positional.empty()) {
-            std::cerr << "Usage: progressive-cli irc <connect|join|msg|leave|whois|names>" << std::endl;
+            std::cerr << "Usage: pcp-cli irc <connect|join|msg|leave|whois|names>" << std::endl;
             return 1;
         }
         static irc::IrcClient ircClient;
@@ -150,7 +150,7 @@ int cmdLemmyBridge(const matrixcli::cli::Args& args) {
 
         using namespace matrixcli;
         if (args.positional.empty()) {
-            std::cerr << "Usage: progressive-cli lemmy <login|posts|post|upvote|comments>" << std::endl;
+            std::cerr << "Usage: pcp-cli lemmy <login|posts|post|upvote|comments>" << std::endl;
             return 1;
         }
         std::string sub = args.positional[0];
@@ -182,7 +182,7 @@ int cmdLemmyBridge(const matrixcli::cli::Args& args) {
 int cmdDcBridge(const matrixcli::cli::Args& args) {
 
         using namespace matrixcli;
-        if (args.positional.empty()) { std::cerr << "Usage: progressive-cli dc <login|chats|msg|history>" << std::endl; return 1; }
+        if (args.positional.empty()) { std::cerr << "Usage: pcp-cli dc <login|chats|msg|history>" << std::endl; return 1; }
         std::string sub = args.positional[0];
         if (sub == "login") {
             g_dc.initialize();

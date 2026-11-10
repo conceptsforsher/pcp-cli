@@ -18,14 +18,14 @@ bool init() {
     Core& c = core();
     if (c.store) return c.storeOk;  // already initialized
 
-    c.store = std::make_shared<progressive::desktop::SessionStore>();
+    c.store = std::make_shared<pcp::desktop::SessionStore>();
     c.storeOk = c.store->open("session.db");
     if (!c.storeOk) {
         std::fprintf(stderr, "[pcore] cannot open session.db\n");
     }
-    c.client = std::make_shared<progressive::desktop::MatrixClient>();
+    c.client = std::make_shared<pcp::desktop::MatrixClient>();
     c.client->setSessionStore(c.store.get());
-    c.sync = std::make_unique<progressive::desktop::SyncEngine>();
+    c.sync = std::make_unique<pcp::desktop::SyncEngine>();
     c.sync->setClient(c.client);
     c.sync->setSessionStore(c.store);
     return c.storeOk;
@@ -45,8 +45,8 @@ std::string bootstrap() {
     if (!c.client || !c.client->isLoggedIn()) return "not logged in";
 
     auto acct = c.client->account();
-    if (acct.deviceId.empty() || acct.deviceId == "PROGRESSIVE_DESKTOP") {
-        acct.deviceId = progressive::desktop::generateUUID();
+    if (acct.deviceId.empty() || acct.deviceId == "PCP_DESKTOP") {
+        acct.deviceId = pcp::desktop::generateUUID();
         c.client->setAccount(acct);
     }
     c.client->persistSession();
@@ -57,7 +57,7 @@ std::string bootstrap() {
     return "";
 }
 
-void startSync(const std::function<void(const progressive::desktop::FastSyncResponse&)>& onResponse) {
+void startSync(const std::function<void(const pcp::desktop::FastSyncResponse&)>& onResponse) {
     Core& c = core();
     if (onResponse) c.sync->onSync(onResponse);
     c.sync->start();
@@ -69,7 +69,7 @@ void stopSync() {
 
 bool requireSession() {
     if (!init() || !loadSavedSession()) {
-        std::fprintf(stderr, "Not logged in. Run 'progressive-cli login' first.\n");
+        std::fprintf(stderr, "Not logged in. Run 'pcp-cli login' first.\n");
         return false;
     }
     return true;
@@ -93,7 +93,7 @@ std::vector<PendingTimelineDecrypt>& pendingTimelineDecrypts() {
 }
 }  // namespace
 
-void feedCache(const progressive::desktop::FastSyncResponse& resp) {
+void feedCache(const pcp::desktop::FastSyncResponse& resp) {
     // Room metadata + timeline events -> legacy offline store, keeping
     // view/rooms/search/API working against the cache.
     db::Database dbi;
