@@ -1,6 +1,6 @@
 // src/proxy_commands.cpp — Tor/I2P/SOCKS5 proxy configuration for the CLI.
 //
-// Wraps the progressive-core global proxy (setGlobalProxy/getGlobalProxy,
+// Wraps the pcp-core global proxy (setGlobalProxy/getGlobalProxy,
 // src/core/http_client.{hpp,cpp}): `proxy on --host H --port P [--type ...]`,
 // `proxy off`, `proxy status [--json]`. The setting persists in config.json
 // and is auto-applied at every process start (applyProxyFromConfig, called
@@ -9,7 +9,7 @@
 // SECURITY PROPERTY: the default type is socks5h (Socks5Hostname) — the proxy
 // resolves DNS itself, so the client NEVER leaks the target hostname via a
 // local DNS query. All core traffic (matrix_client, decryptor, media, LLM)
-// flows through progressive::desktop::httpExecute, which consults the global
+// flows through pcp::desktop::httpExecute, which consults the global
 // proxy on every request.
 #include "commands.hpp"
 #include "config.hpp"
@@ -27,21 +27,21 @@ namespace {
 
 // Parse a --type value into a core ProxyConfig::Type. Accepts the curl-ish
 // spellings: socks5h (default), socks5, http.
-progressive::desktop::ProxyConfig::Type parseProxyType(const std::string& s,
+pcp::desktop::ProxyConfig::Type parseProxyType(const std::string& s,
                                                        bool* ok) {
     *ok = true;
-    if (s == "socks5h") return progressive::desktop::ProxyConfig::Type::Socks5Hostname;
-    if (s == "socks5")  return progressive::desktop::ProxyConfig::Type::Socks5;
-    if (s == "http")    return progressive::desktop::ProxyConfig::Type::Http;
+    if (s == "socks5h") return pcp::desktop::ProxyConfig::Type::Socks5Hostname;
+    if (s == "socks5")  return pcp::desktop::ProxyConfig::Type::Socks5;
+    if (s == "http")    return pcp::desktop::ProxyConfig::Type::Http;
     *ok = false;
-    return progressive::desktop::ProxyConfig::Type::Socks5Hostname;
+    return pcp::desktop::ProxyConfig::Type::Socks5Hostname;
 }
 
-std::string proxyTypeName(progressive::desktop::ProxyConfig::Type t) {
+std::string proxyTypeName(pcp::desktop::ProxyConfig::Type t) {
     switch (t) {
-        case progressive::desktop::ProxyConfig::Type::Http:           return "http";
-        case progressive::desktop::ProxyConfig::Type::Socks5:         return "socks5";
-        case progressive::desktop::ProxyConfig::Type::Socks5Hostname: return "socks5h";
+        case pcp::desktop::ProxyConfig::Type::Http:           return "http";
+        case pcp::desktop::ProxyConfig::Type::Socks5:         return "socks5";
+        case pcp::desktop::ProxyConfig::Type::Socks5Hostname: return "socks5h";
     }
     return "socks5h";
 }
@@ -151,7 +151,7 @@ void dumpConfigFile() {
 // Plain-text mirror of `proxy status` for wire clients (no colours).
 std::string proxyStatusPlainText() {
     std::ostringstream oss;
-    const auto cfg = progressive::desktop::getGlobalProxy();
+    const auto cfg = pcp::desktop::getGlobalProxy();
     const auto presets = loadPresets();
     std::string psum;
     for (size_t i = 0; i < presets.size(); ++i) {
@@ -231,7 +231,7 @@ void migrateFlatProxyKeys() {
 }
 
 // Fill *out from the active preset; returns false when no proxy is active.
-bool activeProxyConfig(progressive::desktop::ProxyConfig* out) {
+bool activeProxyConfig(pcp::desktop::ProxyConfig* out) {
     std::string active = Config::instance().get("proxy_active");
     if (active.empty()) return false;
     for (const auto& p : loadPresets()) {
@@ -241,7 +241,7 @@ bool activeProxyConfig(progressive::desktop::ProxyConfig* out) {
             out->port = p.port;
             bool ok = true;
             out->type = parseProxyType(p.type, &ok);
-            if (!ok) out->type = progressive::desktop::ProxyConfig::Type::Socks5Hostname;
+            if (!ok) out->type = pcp::desktop::ProxyConfig::Type::Socks5Hostname;
             out->username = p.user;
             out->password = p.pass;
             return true;
@@ -253,7 +253,7 @@ bool activeProxyConfig(progressive::desktop::ProxyConfig* out) {
 // Make a proxy the active one, storing it in config.json as a preset (a
 // matching entry is reused, otherwise a "custom" preset is added) — this is
 // the only writer of the proxy state, so no duplicates can appear.
-void persistActiveProxy(const progressive::desktop::ProxyConfig& cfg) {
+void persistActiveProxy(const pcp::desktop::ProxyConfig& cfg) {
     if (!Config::instance().getRaw("proxy_presets").is_array()) {
         Config::instance().setRaw("proxy_presets", defaultPresetsJson());
     }
@@ -302,9 +302,9 @@ void applyProxyFromConfig() {
         Config::instance().save();
     }
 
-    progressive::desktop::ProxyConfig cfg;
+    pcp::desktop::ProxyConfig cfg;
     activeProxyConfig(&cfg);
-    progressive::desktop::setGlobalProxy(cfg);
+    pcp::desktop::setGlobalProxy(cfg);
 }
 
 int cmdProxy(const cli::Args& args) {
@@ -357,7 +357,7 @@ int cmdProxy(const cli::Args& args) {
                 return 1;
             }
             const ProxyPreset& p = presets[idx];
-            progressive::desktop::ProxyConfig cfg;
+            pcp::desktop::ProxyConfig cfg;
             cfg.enabled = true;
             cfg.host = p.host;
             cfg.port = p.port;
@@ -365,7 +365,7 @@ int cmdProxy(const cli::Args& args) {
             cfg.type = parseProxyType(p.type, &ok);
             cfg.username = p.user;
             cfg.password = p.pass;
-            progressive::desktop::setGlobalProxy(cfg);
+            pcp::desktop::setGlobalProxy(cfg);
             persistActiveProxy(cfg);
             std::cout << "proxy enabled: " << proxyTypeName(cfg.type) << "://" << cfg.host
                       << ":" << cfg.port << " (" << p.name << " preset)" << std::endl;
@@ -395,7 +395,7 @@ int cmdProxy(const cli::Args& args) {
             return 1;
         }
 
-        progressive::desktop::ProxyConfig cfg;
+        pcp::desktop::ProxyConfig cfg;
         cfg.enabled = true;
         cfg.host = host_it->second;
         cfg.port = port;
@@ -404,7 +404,7 @@ int cmdProxy(const cli::Args& args) {
         if (user_it != args.options.end()) cfg.username = user_it->second;
         auto pass_it = args.options.find("pass");
         if (pass_it != args.options.end()) cfg.password = pass_it->second;
-        progressive::desktop::setGlobalProxy(cfg);
+        pcp::desktop::setGlobalProxy(cfg);
         persistActiveProxy(cfg);
 
         std::cout << "proxy enabled: " << proxyTypeName(cfg.type) << "://" << cfg.host
@@ -415,14 +415,14 @@ int cmdProxy(const cli::Args& args) {
     }
 
     if (sub == "off") {
-        progressive::desktop::setGlobalProxy(progressive::desktop::ProxyConfig{});
-        persistActiveProxy(progressive::desktop::ProxyConfig{});
+        pcp::desktop::setGlobalProxy(pcp::desktop::ProxyConfig{});
+        persistActiveProxy(pcp::desktop::ProxyConfig{});
         std::cout << "proxy disabled — direct connections" << std::endl;
         return 0;
     }
 
     // status (default)
-    auto cfg = progressive::desktop::getGlobalProxy();
+    auto cfg = pcp::desktop::getGlobalProxy();
     if (json_out) {
         nlohmann::json j;
         j["enabled"] = cfg.enabled;

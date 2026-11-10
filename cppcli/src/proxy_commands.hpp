@@ -11,5 +11,5 @@
 // two helpers are shared with demo mode and the legacy serve-login path.
 void applyProxyFromConfig();
 std::string proxyStatusPlainText();
-bool activeProxyConfig(progressive::desktop::ProxyConfig* out);
-void persistActiveProxy(const progressive::desktop::ProxyConfig& cfg);
+bool activeProxyConfig(pcp::desktop::ProxyConfig* out);
+void persistActiveProxy(const pcp::desktop::ProxyConfig& cfg);

@@ -74,7 +74,7 @@ Response DemoHandler::handleStatus(const Request& req) {
     if (fmt == Format::Text) {
         resp.content_type = "text/plain";
         std::ostringstream oss;
-        oss << "Progressive Chat CLI — demo server\n"
+        oss << "PCP CLI — demo server\n"
             << "══════════════════════════════════════\n"
             << "User:     " << j["user_id"].get<std::string>() << "\n"
             << "Device:   " << j["device_id"].get<std::string>() << "\n"

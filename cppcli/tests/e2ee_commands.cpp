@@ -85,7 +85,7 @@ int cmdE2ee(const cli::Args& args) {
                   << std::endl;
         return 0;
     }
-    std::cerr << "Usage: progressive-cli e2ee <status|upload|fallback>" << std::endl;
+    std::cerr << "Usage: pcp-cli e2ee <status|upload|fallback>" << std::endl;
     return 1;
 }
 
@@ -123,7 +123,7 @@ int cmdBackup(const cli::Args& args) {
     if (sub == "restore") {
         std::string key = args.options.count("recovery-key") ? args.options.at("recovery-key") : (args.positional.size() > 1 ? args.positional[1] : "");
         if (key.empty()) {
-            std::cerr << "Usage: progressive-cli backup restore --recovery-key <key>" << std::endl;
+            std::cerr << "Usage: pcp-cli backup restore --recovery-key <key>" << std::endl;
             return 1;
         }
         int n = core.sync->restoreKeyBackupNow(key);
@@ -143,7 +143,7 @@ int cmdBackup(const cli::Args& args) {
         }
         return ok ? 0 : 1;
     }
-    std::cerr << "Usage: progressive-cli backup <create|upload|restore|delete>" << std::endl;
+    std::cerr << "Usage: pcp-cli backup <create|upload|restore|delete>" << std::endl;
     return 1;
 }
 
@@ -188,7 +188,7 @@ int cmdCrossSign(const cli::Args& args) {
             if (core.sync->setupCrossSigningWithPassword(password)) return report(true, "reset");
         return report(false, "reset");
     }
-    std::cerr << "Usage: progressive-cli crosssign <setup|reset> [--password <pw>]" << std::endl;
+    std::cerr << "Usage: pcp-cli crosssign <setup|reset> [--password <pw>]" << std::endl;
     return 1;
 }
 
@@ -200,7 +200,7 @@ int cmdSsss(const cli::Args& args) {
 
     std::string key = args.options.count("recovery-key") ? args.options.at("recovery-key") : (args.positional.size() > 1 ? args.positional[1] : "");
     if (key.empty()) {
-        std::cerr << "Usage: progressive-cli ssss <upload|retrieve> --recovery-key <key>" << std::endl;
+        std::cerr << "Usage: pcp-cli ssss <upload|retrieve> --recovery-key <key>" << std::endl;
         return 1;
     }
 
@@ -222,7 +222,7 @@ int cmdSsss(const cli::Args& args) {
         }
         return n > 0 ? 0 : 1;
     }
-    std::cerr << "Usage: progressive-cli ssss <upload|retrieve> --recovery-key <key>" << std::endl;
+    std::cerr << "Usage: pcp-cli ssss <upload|retrieve> --recovery-key <key>" << std::endl;
     return 1;
 }
 
@@ -248,7 +248,7 @@ int runSasVerification(const std::string& targetUser,
         return 1;
     }
 
-    progressive::desktop::VerificationController controller;
+    pcp::desktop::VerificationController controller;
     controller.setClient(core.client);
     controller.setVerificationManager(&core.sync->verificationManager());
     controller.setSyncEngine(core.sync.get());
@@ -261,10 +261,10 @@ int runSasVerification(const std::string& targetUser,
         controller.startUserVerification(targetUser, targetDevice);
     }
 
-    progressive::desktop::VerificationTransaction* txn = nullptr;
+    pcp::desktop::VerificationTransaction* txn = nullptr;
     for (auto* t : core.sync->verificationManager().activeTransactions()) {
         if (t->weInitiated && t->otherUserId == targetUser &&
-            t->otherDeviceId == targetDevice && t->state != progressive::desktop::VerificationState::Done) {
+            t->otherDeviceId == targetDevice && t->state != pcp::desktop::VerificationState::Done) {
             txn = t;
             break;
         }
@@ -288,10 +288,10 @@ int runSasVerification(const std::string& targetUser,
         auto* t = vm.findTransaction(txnId);
         if (!t) { log("Verify failed: transaction gone"); break; }
 
-        if (t->state == progressive::desktop::VerificationState::Cancelled) {
+        if (t->state == pcp::desktop::VerificationState::Cancelled) {
             log("Verification cancelled by the other side ("
-                + progressive::desktop::cancelCodeToString(
-                    t->cancelCode.value_or(progressive::desktop::CancelCode::Other)) + ")");
+                + pcp::desktop::cancelCodeToString(
+                    t->cancelCode.value_or(pcp::desktop::CancelCode::Other)) + ")");
             break;
         }
         auto showEmojis = [&](const char* note) {
@@ -303,7 +303,7 @@ int runSasVerification(const std::string& targetUser,
             }
             log(block);
         };
-        if (t->state == progressive::desktop::VerificationState::KeyReceived && !confirmed) {
+        if (t->state == pcp::desktop::VerificationState::KeyReceived && !confirmed) {
             showEmojis("Compare these emojis on both devices:");
             if (autoConfirm) {
                 confirmed = true;
@@ -323,7 +323,7 @@ int runSasVerification(const std::string& targetUser,
         // arrives before our own confirmation, skipping KeyReceived. Treat
         // MacReceived the same: show emojis, confirm, send OUR MAC, then the
         // peer's Done (or ours) completes the flow.
-        if (t->state == progressive::desktop::VerificationState::MacReceived && !confirmed) {
+        if (t->state == pcp::desktop::VerificationState::MacReceived && !confirmed) {
             showEmojis("Compare these emojis on both devices (peer already confirmed):");
             if (autoConfirm) {
                 confirmed = true;
@@ -339,7 +339,7 @@ int runSasVerification(const std::string& targetUser,
                 break;
             }
         }
-        if (t->state == progressive::desktop::VerificationState::Done) {
+        if (t->state == pcp::desktop::VerificationState::Done) {
             core.store->saveVerifiedDevice(targetUser, targetDevice);
             log(std::string(ANSI_GREEN "\n  ✓ Device verified: ") + targetUser
                 + "/" + targetDevice + ANSI_RESET);
@@ -365,7 +365,7 @@ int runSasVerification(const std::string& targetUser,
 int cmdVerify(const cli::Args& args) {
     if (!pcore::requireSession()) return 1;
     if (args.positional.empty()) {
-        std::cerr << "Usage: progressive-cli verify <@user:server> --device <deviceId> [--confirm] [--timeout s] [--json]" << std::endl;
+        std::cerr << "Usage: pcp-cli verify <@user:server> --device <deviceId> [--confirm] [--timeout s] [--json]" << std::endl;
         return 1;
     }
     const std::string targetUser = args.positional[0];
@@ -431,7 +431,7 @@ int cmdVerifyWait(const cli::Args& args) {
         return 1;
     }
 
-    progressive::desktop::VerificationController controller;
+    pcp::desktop::VerificationController controller;
     controller.setClient(core.client);
     controller.setVerificationManager(&core.sync->verificationManager());
     controller.setSyncEngine(core.sync.get());
@@ -450,7 +450,7 @@ int cmdVerifyWait(const cli::Args& args) {
     while (matrixcli::g_interrupted.load() && std::chrono::steady_clock::now() < deadline) {
         // Once a transaction is captured, follow it by id (Done must NOT be
         // filtered out — the completion branch below needs to see it).
-        progressive::desktop::VerificationTransaction* incoming = nullptr;
+        pcp::desktop::VerificationTransaction* incoming = nullptr;
         if (!txnId.empty()) {
             incoming = vm.findTransaction(txnId);
         } else {
@@ -461,8 +461,8 @@ int cmdVerifyWait(const cli::Args& args) {
             // the SAS spec's 10-minute transaction timeout.
             auto now = std::chrono::steady_clock::now();
             for (auto* t : vm.activeTransactions()) {
-                if (t->isIncoming && t->state != progressive::desktop::VerificationState::Done
-                    && t->state != progressive::desktop::VerificationState::Cancelled
+                if (t->isIncoming && t->state != pcp::desktop::VerificationState::Done
+                    && t->state != pcp::desktop::VerificationState::Cancelled
                     && (now - t->startTime) < std::chrono::minutes(10)) {
                     if (!incoming || t->startTime > incoming->startTime) {
                         incoming = t;
@@ -485,14 +485,14 @@ int cmdVerifyWait(const cli::Args& args) {
         auto* t = vm.findTransaction(txnId);
         if (!t) { std::cerr << "Verify-wait failed: transaction gone" << std::endl; break; }
 
-        if (t->state == progressive::desktop::VerificationState::Cancelled) {
+        if (t->state == pcp::desktop::VerificationState::Cancelled) {
             std::cerr << "Verification cancelled by the other side ("
-                      << progressive::desktop::cancelCodeToString(
-                             t->cancelCode.value_or(progressive::desktop::CancelCode::Other)) << ")"
+                      << pcp::desktop::cancelCodeToString(
+                             t->cancelCode.value_or(pcp::desktop::CancelCode::Other)) << ")"
                       << std::endl;
             break;
         }
-        if (t->state == progressive::desktop::VerificationState::KeyReceived && !confirmed) {
+        if (t->state == pcp::desktop::VerificationState::KeyReceived && !confirmed) {
             auto emojis = vm.computeEmojis(*t);
             if (!emojis.empty()) {
                 std::cout << "\nCompare these emojis on both devices:\n";
@@ -524,7 +524,7 @@ int cmdVerifyWait(const cli::Args& args) {
         // arrives before our own confirmation, skipping KeyReceived. Treat
         // MacReceived the same: show emojis, confirm, send OUR MAC, then the
         // peer's Done (or ours) completes the flow.
-        if (t->state == progressive::desktop::VerificationState::MacReceived && !confirmed) {
+        if (t->state == pcp::desktop::VerificationState::MacReceived && !confirmed) {
             auto emojis = vm.computeEmojis(*t);
             if (!emojis.empty()) {
                 std::cout << "\nCompare these emojis on both devices (peer already confirmed):\n";
@@ -552,7 +552,7 @@ int cmdVerifyWait(const cli::Args& args) {
                 }
             }
         }
-        if (t->state == progressive::desktop::VerificationState::Done) {
+        if (t->state == pcp::desktop::VerificationState::Done) {
             core.store->saveVerifiedDevice(t->otherUserId, t->otherDeviceId);
             if (json_out) {
                 nlohmann::json j;

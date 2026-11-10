@@ -368,7 +368,7 @@ void populateDemoDataExtras(matrixcli::db::Database& dbi) {
         r1.room_id = "!general:demo.local"; r1.sender = "@bob";
         r1.type = "m.room.message";
         r1.content = {{"body",
-            "> <@alice:demo.local> Welcome! This is progressive-cli — a terminal Matrix client.\n\n"
+            "> <@alice:demo.local> Welcome! This is pcp-cli — a terminal Matrix client.\n\n"
             "It even renders reply chains!"},
             {"msgtype", "m.text"},
             {"m.relates_to", {{"m.in_reply_to", {{"event_id", alice_welcome}}}}}};
@@ -564,7 +564,7 @@ void populateDemoDataExtras(matrixcli::db::Database& dbi) {
         ins("@alice:matrix.org", "Hello from matrix.org!");
         ins("@heidi", "Just joined! Hi everyone");
         ins("@bob", "Welcome @heidi! Check the pinned message.");
-        ins("@ivan", "Anyone tried the new ui? https://github.com/progressive-chat/progressive-cli");
+        ins("@ivan", "Anyone tried the new ui? https://github.com/pcp-chat/pcp-cli");
         ins("@you", "The ascii client looks great on my phone.");
         ins("@julia", "Screenshots or it didn't happen");
         ins("@kate", "Here you go: https://matrix.org/docs/guide");
@@ -609,7 +609,7 @@ void populateDemoDataExtras(matrixcli::db::Database& dbi) {
         ins("@ivan", "Voted! Morning works for me.");
         ins("@julia", "Evening is better for the EU folks.");
         ins("@heidi", "@bob where are the release notes?");
-        ins("@bob", "Here: https://github.com/progressive-chat/progressive-cli/releases");
+        ins("@bob", "Here: https://github.com/pcp-chat/pcp-cli/releases");
         ins("@kate", "Awesome work, the demo is impressive.");
         ins("@alice", "Meeting in 30, don't be late!");
         ins("@you", "On my way.");

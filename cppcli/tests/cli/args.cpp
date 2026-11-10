@@ -101,8 +101,8 @@ std::string usageText(const Args& args, bool fmt) {
     const std::string demoCol = fmt ? std::string(ANSI_BOLD) + "\033[37m" : "";
     const std::string rst = fmt ? "\033[0m" : "";
 
-    oss << head << "progressive-cli - the Matrix chat client and coding agent, designed to work in the terminal" << rst << "\n\n"
-              << usage << "Usage: progressive-cli [command] [options]" << rst << "\n\n";
+    oss << head << "pcp-cli - the Matrix chat client and coding agent, designed to work in the terminal" << rst << "\n\n"
+              << usage << "Usage: pcp-cli [command] [options]" << rst << "\n\n";
 
     oss << bold << "The Matrix client" << rst << "\n"
               << "  " << demoCol << "accounts" << rst << "      Logged-in accounts: accounts [--all] [--json] | --hide <mxid> | --show <mxid>\n"
@@ -121,7 +121,7 @@ std::string usageText(const Args& args, bool fmt) {
               << "  kick/ban/unban  The moderator actions: kick|ban|unban <room> <@user> [--reason r]\n"
               << "  " << demoCol << "report" << rst << "        Report a message to the homeserver admin: report <room> <event_id> [--reason r] [--score N]\n"
               << "  knock         Knock on a room\n"
-              << "  " << demoCol << "markdown" << rst << "      Render markdown to HTML: markdown <text> | echo <text> | progressive-cli markdown\n"
+              << "  " << demoCol << "markdown" << rst << "      Render markdown to HTML: markdown <text> | echo <text> | pcp-cli markdown\n"
               << "  " << demoCol << "members" << rst << "       The room members: members <room>\n"
               << "  power         Room power levels / permissions: power <room>\n"
               << "  notifications Notification settings: notifications (on|off)\n"
@@ -188,20 +188,20 @@ std::string usageText(const Args& args, bool fmt) {
               << "  520743); bare URLs have it.\n\n";
 
     oss << bold << "Examples:" << rst << "\n"
-              << "  progressive-cli login --homeserver https://matrix.org --username @me:matrix.org --password s3cret\n"
-              << "  progressive-cli register --homeserver https://example.org --username newuser --password s3cret [--reg-token T]\n"
-              << "  progressive-cli rooms\n"
-              << "  progressive-cli view \"#general:matrix.org\" 50\n"
-              << "  progressive-cli send \"#general:matrix.org\" \"Hello from CLI!\"\n"
-              << "  progressive-cli llm \"explain this code\" --rich\n"
-              << "  progressive-cli demo                        # the interactive demo session\n"
-              << "  progressive-cli demo ui --static panel show # how the three panel widths are computed\n"
-               << "  progressive-cli serve --port=29325\n"
-               << "  progressive-cli serve --ttys --port=29325 [--sync auto] [--cache f] [--bind ip] [--token t]\n"
+              << "  pcp-cli login --homeserver https://matrix.org --username @me:matrix.org --password s3cret\n"
+              << "  pcp-cli register --homeserver https://example.org --username newuser --password s3cret [--reg-token T]\n"
+              << "  pcp-cli rooms\n"
+              << "  pcp-cli view \"#general:matrix.org\" 50\n"
+              << "  pcp-cli send \"#general:matrix.org\" \"Hello from CLI!\"\n"
+              << "  pcp-cli llm \"explain this code\" --rich\n"
+              << "  pcp-cli demo                        # the interactive demo session\n"
+              << "  pcp-cli demo ui --static panel show # how the three panel widths are computed\n"
+               << "  pcp-cli serve --port=29325\n"
+               << "  pcp-cli serve --ttys --port=29325 [--sync auto] [--cache f] [--bind ip] [--token t]\n"
                << "                                        # remote ASCII UI server; sessions in RAM by default\n"
-               << "  progressive-cli ttys --host H --port 29325 [--token t]  # thin client (any user)\n"
+               << "  pcp-cli ttys --host H --port 29325 [--token t]  # thin client (any user)\n"
               << "\n"
-              << "The detailed flags: progressive-cli <command> --help\n"
+              << "The detailed flags: pcp-cli <command> --help\n"
               << dim << "The formatting is on only when attached to a terminal;"
               << rst << "\n"
               << dim << "--disable-formatting (or NO_COLOR=1) forces plain text."
@@ -214,7 +214,7 @@ void printUsage(const Args& args) {
 }
 
 std::string versionString() {
-    return "progressive-cli v0.5.4";
+    return "pcp-cli v0.5.4";
 }
 
 void printVersion() {

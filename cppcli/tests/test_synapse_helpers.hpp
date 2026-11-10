@@ -51,14 +51,14 @@ static const std::string g_runSuffix =
         }                                                                     \
     } while (0)
 
-using namespace progressive::desktop;
+using namespace pcp::desktop;
 
 static const char* envOr(const char* name, const char* def) {
     const char* v = std::getenv(name);
     return (v && *v) ? v : def;
 }
 
-// ---- Small JSON helpers (no progressive_native parser dependency) ----
+// ---- Small JSON helpers (no pcp_native parser dependency) ----
 
 static std::string jsonStr(const simdjson::dom::element& el, const char* key) {
     auto v = el[key].get_string();
@@ -158,15 +158,15 @@ static bool loginUser(TestUser& u, const std::string& hs, const std::string& una
 
 // Generate + publish cross-signing keys (endpoint, UIA retry) + re-upload
 // device_keys with the SSK signature. Returns the keys (empty on failure).
-static progressive::desktop::CrossSigningKeys publishCrossSigning(TestUser& u) {
-    auto keys = progressive::desktop::generateCrossSigningKeys();
+static pcp::desktop::CrossSigningKeys publishCrossSigning(TestUser& u) {
+    auto keys = pcp::desktop::generateCrossSigningKeys();
     if (keys.masterPub.empty()) return {};
-    auto master = progressive::desktop::buildCrossSigningContent(
+    auto master = pcp::desktop::buildCrossSigningContent(
         "m.cross_signing.master", keys.masterPub, "", "", u.userId);
-    auto self = progressive::desktop::buildCrossSigningContent(
+    auto self = pcp::desktop::buildCrossSigningContent(
         "m.cross_signing.self_signing", keys.selfPub,
         keys.masterPub, keys.masterPriv, u.userId);
-    auto user = progressive::desktop::buildCrossSigningContent(
+    auto user = pcp::desktop::buildCrossSigningContent(
         "m.cross_signing.user_signing", keys.userPub,
         keys.masterPub, keys.masterPriv, u.userId);
     std::string body = "{\"master_key\":" + master
@@ -261,7 +261,7 @@ static void sasSendToDevice(TestUser& u, const std::string& type,
     u.client.sendToDevice(type, "sas" + txnId, body);
 }
 
-static progressive::desktop::VerificationManager::DeviceKeyResolverFn
+static pcp::desktop::VerificationManager::DeviceKeyResolverFn
 makeSasResolver(TestUser& u) {
     return [&u](const std::string& user, const std::string& dev,
                 std::string& ed, std::string& curve) -> bool {
@@ -284,9 +284,9 @@ makeSasResolver(TestUser& u) {
 }
 
 // Sync + dispatch m.key.verification.* until the txn reaches the wanted state.
-static bool waitVState(TestUser& u, progressive::desktop::VerificationManager& mgr,
+static bool waitVState(TestUser& u, pcp::desktop::VerificationManager& mgr,
                        std::string& since, const std::string& txnId,
-                       progressive::desktop::VerificationState want, int rounds = 20) {
+                       pcp::desktop::VerificationState want, int rounds = 20) {
     for (int r = 0; r < rounds; ++r) {
         auto resp = u.client.syncFast(since, 2000, false);
         if (resp.ok) {

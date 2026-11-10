@@ -50,7 +50,7 @@
 int cmdView(const matrixcli::cli::Args& args) {
     using namespace matrixcli;
     if (args.positional.empty()) {
-        std::cerr << "Usage: progressive-cli view <room> [limit] [--thread event_id] [--before eid] [--from eid]\n"
+        std::cerr << "Usage: pcp-cli view <room> [limit] [--thread event_id] [--before eid] [--from eid]\n"
                      "       [--senders @u:h,@u2:h] [--hide @u:h] [--replies N|off] [--no-replies]\n"
                      "       [--no-filter] [--json] [--expand] [--verbose] [--ts]"
                   << std::endl;
@@ -419,7 +419,7 @@ int cmdView(const matrixcli::cli::Args& args) {
 int cmdAttachFile(const cli::Args& args) {
     using namespace matrixcli;
     if (args.positional.size() < 2) {
-        std::cerr << "Usage: progressive-cli attach <room> <file> [--caption text] [--thread event_id] [--chunks N]" << std::endl;
+        std::cerr << "Usage: pcp-cli attach <room> <file> [--caption text] [--thread event_id] [--chunks N]" << std::endl;
         return 1;
     }
     std::string query = args.positional[0];
@@ -475,7 +475,7 @@ int cmdAttachFile(const cli::Args& args) {
     bool hasImgDim = mt == "m.image" && matrixcli::media::imageDimensions(bytes, ext, imgW, imgH);
 
     if (!pcore::init() || !pcore::loadSavedSession()) {
-        std::cerr << "Not logged in. Run 'progressive-cli login' first." << std::endl;
+        std::cerr << "Not logged in. Run 'pcp-cli login' first." << std::endl;
         return 1;
     }
     auto& core = pcore::core();
@@ -506,7 +506,7 @@ int cmdAttachFile(const cli::Args& args) {
     // Live upload progress on stderr (the callback runs on the curl thread).
     int lastPct = -1;
     bool progressDone = false;
-    progressive::desktop::setHttpProgressCallback(
+    pcp::desktop::setHttpProgressCallback(
         [&lastPct, &progressDone](int64_t ul, int64_t ulTotal,
                                   int64_t, int64_t) {
             if (ulTotal > 0 && !progressDone) {
@@ -524,7 +524,7 @@ int cmdAttachFile(const cli::Args& args) {
         });
     auto finishProgress = [&progressDone]() {
         if (!progressDone) std::fprintf(stderr, "\n");
-        progressive::desktop::setHttpProgressCallback({});
+        pcp::desktop::setHttpProgressCallback({});
         progressDone = true;
     };
 
@@ -575,16 +575,16 @@ int cmdAttachFile(const cli::Args& args) {
 
     // Encrypted room: AES-CTR the file + the Element "file" block.
     std::string encKey, encIv;
-    if (!progressive::desktop::generateMediaKeyIv(encKey, encIv)) {
+    if (!pcp::desktop::generateMediaKeyIv(encKey, encIv)) {
         std::cerr << "Media key generation failed" << std::endl;
         return 1;
     }
-    std::vector<uint8_t> encBytes = progressive::desktop::aesCtrCrypt(bytes, encKey, encIv);
+    std::vector<uint8_t> encBytes = pcp::desktop::aesCtrCrypt(bytes, encKey, encIv);
     if (encBytes.empty()) { std::cerr << "Media encryption failed" << std::endl; return 1; }
-    std::string encSha = progressive::desktop::sha256Base64(bytes);
+    std::string encSha = pcp::desktop::sha256Base64(bytes);
     int encLastPct = -1;
     bool encDone = false;
-    progressive::desktop::setHttpProgressCallback(
+    pcp::desktop::setHttpProgressCallback(
         [&encLastPct, &encDone](int64_t ul, int64_t ulTotal, int64_t, int64_t) {
             if (ulTotal > 0 && !encDone) {
                 int pct = static_cast<int>(ul * 100 / ulTotal);
@@ -601,7 +601,7 @@ int cmdAttachFile(const cli::Args& args) {
         });
     mxc = doUpload(encBytes);
     if (!encDone) std::fprintf(stderr, "\n");
-    progressive::desktop::setHttpProgressCallback({});
+    pcp::desktop::setHttpProgressCallback({});
     if (mxc.empty()) {
         std::cerr << "Upload failed." << std::endl;
         return 1;

@@ -8,7 +8,7 @@
 namespace matrixcli { namespace server {
 
 APIServer::APIServer(int port, ServerMode mode, const std::string& homeserver,
-                     std::shared_ptr<progressive::desktop::MatrixClient> client)
+                     std::shared_ptr<pcp::desktop::MatrixClient> client)
     : _port(port), _server(port), _mode(mode), _client(std::move(client)) {
     api::Router router;
 

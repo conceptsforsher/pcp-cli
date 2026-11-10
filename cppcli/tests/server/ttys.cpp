@@ -16,18 +16,18 @@ using namespace std::chrono_literals;
 
 namespace matrixcli { namespace server {
 
-// Apply the proxy configured via `progressive-cli proxy on` (config.json) to
+// Apply the proxy configured via `pcp-cli proxy on` (config.json) to
 // a session's matrix client. lib/http (what matrix::Client uses) only reads
 // the env proxy (all_proxy/https_proxy) on its own, NOT the core's global
 // proxy, so the configured one is set explicitly here.
 static void applyConfiguredProxy(matrix::Client& client) {
     try { Config::instance().load("config.json"); } catch (...) {}
-    progressive::desktop::ProxyConfig active;
+    pcp::desktop::ProxyConfig active;
     if (!activeProxyConfig(&active)) return;
     http::ProxyConfig p;
     p.host = active.host;
     p.port = active.port;
-    p.type = (active.type == progressive::desktop::ProxyConfig::Type::Http)
+    p.type = (active.type == pcp::desktop::ProxyConfig::Type::Http)
                  ? http::ProxyType::HTTP : http::ProxyType::SOCKS5;
     p.username = active.username;
     p.password = active.password;
@@ -232,7 +232,7 @@ api::Response TtysApi::handleRegister(const api::Request& req) {
         else
             applyConfiguredProxy(client);
         creds = client.registerAccount(username, password,
-                                       "progressive-ttys", regToken);
+                                       "pcp-ttys", regToken);
     } catch (const std::exception& e) {
         json err;
         err["error"] = std::string("registration failed: ") + e.what();
@@ -504,7 +504,7 @@ api::Response TtysApi::handleProxy(const api::Request& req) {
             return {200, "text/plain; charset=utf-8", proxyStatusPlainText()};
     }
     if (req.method == "GET") {
-        progressive::desktop::ProxyConfig cfg;
+        pcp::desktop::ProxyConfig cfg;
         bool on = activeProxyConfig(&cfg);
         json out;
         out["enabled"] = on;
@@ -512,9 +512,9 @@ api::Response TtysApi::handleProxy(const api::Request& req) {
         if (on) {
             out["host"] = cfg.host;
             out["port"] = cfg.port;
-            out["type"] = (cfg.type == progressive::desktop::ProxyConfig::Type::Http)
+            out["type"] = (cfg.type == pcp::desktop::ProxyConfig::Type::Http)
                               ? "http"
-                              : (cfg.type == progressive::desktop::ProxyConfig::Type::Socks5)
+                              : (cfg.type == pcp::desktop::ProxyConfig::Type::Socks5)
                                     ? "socks5"
                                     : "socks5h";
         }

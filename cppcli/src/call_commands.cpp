@@ -1,11 +1,11 @@
 // src/call_commands.cpp — the Matrix VoIP signaling (stage 1: the call
 // state machine over the m.call.* to-device events, no media yet).
 //
-//   progressive-cli call <@user:server>   — the invite (m.call.invite to-device)
-//   progressive-cli call answer <call_id> — the m.call.answer
-//   progressive-cli call hangup <call_id> — the m.call.hangup
-//   progressive-cli call status          — the known calls (the state store)
-//   progressive-cli call wait            — listen: the invites/answers/hangups
+//   pcp-cli call <@user:server>   — the invite (m.call.invite to-device)
+//   pcp-cli call answer <call_id> — the m.call.answer
+//   pcp-cli call hangup <call_id> — the m.call.hangup
+//   pcp-cli call status          — the known calls (the state store)
+//   pcp-cli call wait            — listen: the invites/answers/hangups
 //
 // The state lives in ~/.local/share/matrixcli/calls.json (XDG). The
 // WebRTC media plane is the next stage — the SDPs are empty for now, the
@@ -74,11 +74,11 @@ bool sendCallEvent(const std::string& type, const std::string& peer,
 }
 
 void usage() {
-    std::cerr << "Usage: progressive-cli call <@user:server>\n"
-              << "       progressive-cli call answer <call_id>\n"
-              << "       progressive-cli call hangup <call_id>\n"
-              << "       progressive-cli call status\n"
-              << "       progressive-cli call wait\n";
+    std::cerr << "Usage: pcp-cli call <@user:server>\n"
+              << "       pcp-cli call answer <call_id>\n"
+              << "       pcp-cli call hangup <call_id>\n"
+              << "       pcp-cli call status\n"
+              << "       pcp-cli call wait\n";
 }
 
 } // namespace
@@ -141,7 +141,7 @@ int cmdCall(const cli::Args& args) {
 
     if (sub == "wait") {
         // The listener: the sync loop delivers the to-device events.
-        pcore::startSync([](const progressive::desktop::FastSyncResponse& resp) {
+        pcore::startSync([](const pcp::desktop::FastSyncResponse& resp) {
             for (const auto& evt : resp.toDeviceEventList) {
                 if (evt.type != "m.call.invite" && evt.type != "m.call.answer" &&
                     evt.type != "m.call.hangup" && evt.type != "m.call.candidates")
@@ -161,7 +161,7 @@ int cmdCall(const cli::Args& args) {
                     entry["direction"] = "incoming";
                     entry["state"] = "invited";
                     std::cout << "\nIncoming call " << callId << " from "
-                              << evt.senderId << " — progressive-cli call answer "
+                              << evt.senderId << " — pcp-cli call answer "
                               << callId << std::endl;
                 } else if (evt.type == "m.call.answer") {
                     entry["direction"] = entry.value("direction", "outgoing");

@@ -2,7 +2,7 @@ pkgbase = matrixcli
 	pkgdesc = A terminal Matrix client with E2EE, multi-format REST API, and ncurses TUI
 	pkgver = 0.1.0
 	pkgrel = 1
-	url = https://github.com/progressive-chat/progressive-cli
+	url = https://github.com/pcp-chat/pcp-cli
 	arch = x86_64
 	license = AGPL-3.0-or-later
 	makedepends = cmake
@@ -17,7 +17,7 @@ pkgbase = matrixcli
 	depends = ncurses
 	depends = nlohmann-json
 	optdepends = libnotify: desktop notifications via notify-send
-	source = matrixcli::git+https://github.com/progressive-chat/progressive-cli.git#branch=main
+	source = matrixcli::git+https://github.com/pcp-chat/pcp-cli.git#branch=main
 	md5sums = SKIP
 
 pkgname = matrixcli

@@ -1,6 +1,6 @@
-# progressive-cli
+# pcp-cli
 
-**progressive-cli** is a **Matrix chat client and coding agent designed to
+**pcp-cli** is a **Matrix chat client and coding agent designed to
 work in the terminal** — built in C++23. The command line is the primary
 interface; the ncurses TUI, the ASCII client and the REST API server are
 the other surfaces. Minimal dependencies (POSIX sockets + OpenSSL),
@@ -10,11 +10,11 @@ The project started its life as a gomuks fork (2024) and was rewritten in
 C++ from the ground up — the old Go implementation is retired (the
 `go-legacy` tag keeps it for the history).
 
-> **Note:** This is an independent project in the Progressive Chat
+> **Note:** This is an independent project in the PCP
 > ecosystem. The Android client lives in
-> [progressive-android](https://github.com/progressive-chat/progressive-android),
+> [pcp-android](https://github.com/pcp-chat/pcp-android),
 > the shared Qt-free core in
-> [progressive-core](https://github.com/progressive-chat/progressive-core).
+> [pcp-core](https://github.com/pcp-chat/pcp-core).
 >
 > The docs live in [`docs/`](docs/) — the GitHub Pages sources. The
 > [feature status table](docs/status.html) is stamped with the
@@ -72,8 +72,8 @@ matrixcli/
 └── cppcli/          # The C++23 client (the whole thing)
     ├── lib/http/    #   POSIX + OpenSSL HTTP client, SOCKS5/HTTP proxy
     ├── lib/matrix/  #   Matrix protocol (login, sync, send, events)
-    ├── lib/         #   E2EE/sync core: fetched from progressive-chat/
-    │                #   progressive-core (FetchContent, matrixcli_ecore
+    ├── lib/         #   E2EE/sync core: fetched from pcp-chat/
+    │                #   pcp-core (FetchContent, matrixcli_ecore
     │                #   alias; prebuilt artifact with source fallback)
     ├── lib/api/     #   HTTP server, content negotiation, routing
     ├── lib/formats/ #   Format renderers (JSON, text, MD, gemtext, HTML)
@@ -199,15 +199,15 @@ matrixcli notify test "hello, tray"           # now routed through the daemon
 ```
 
 **Optional: autostart the daemon as a systemd user service.** The Arch
-package ships `progressive-cli-notify.service` (installed but *not*
+package ships `pcp-cli-notify.service` (installed but *not*
 enabled). As the desktop-owning user, opt in with:
 
 ```bash
-systemctl --user enable --now progressive-cli-notify   # starts with each login
-systemctl --user disable --now progressive-cli-notify  # opt out any time
+systemctl --user enable --now pcp-cli-notify   # starts with each login
+systemctl --user disable --now pcp-cli-notify  # opt out any time
 ```
 
-On non-Arch systems copy `packaging/arch/progressive-cli-notify.service`
+On non-Arch systems copy `packaging/arch/pcp-cli-notify.service`
 to `~/.config/systemd/user/` first, or just keep running the daemon
 manually as above. The service is harmless either way: it only listens
 on loopback and only forwards when a client sets `notify host`.
@@ -325,10 +325,10 @@ cmake -S cppcli -B /tmp/opencode/build-home \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 cmake --build /tmp/opencode/build-home -j3
-/tmp/opencode/build-home/src/progressive-cli serve   # Start API server
-/tmp/opencode/build-home/src/progressive-cli login   # Interactive login
-/tmp/opencode/build-home/src/progressive-cli tui     # Terminal UI
-/tmp/opencode/build-home/src/progressive-cli call    # VoIP signaling: call <@user> | answer | hangup | status | wait
+/tmp/opencode/build-home/src/pcp-cli serve   # Start API server
+/tmp/opencode/build-home/src/pcp-cli login   # Interactive login
+/tmp/opencode/build-home/src/pcp-cli tui     # Terminal UI
+/tmp/opencode/build-home/src/pcp-cli call    # VoIP signaling: call <@user> | answer | hangup | status | wait
 ```
 
 Notes:
@@ -336,7 +336,7 @@ Notes:
 - Keep at most `-j3`: small build boxes freeze when oversubscribed.
   Packaging/CI with more cores can raise the limit via `MAKEFLAGS`.
 - Do not use the in-repo `cppcli/build/` directory (stale, ignored).
-- The binary is `progressive-cli`; `matrixcli` stays as a compat symlink.
+- The binary is `pcp-cli`; `matrixcli` stays as a compat symlink.
 - Demo mode keeps its own database (`matrixcli-demo.db`) and never
   touches the real `matrixcli.db` cache.
 - Security scope: the notify forwarding daemon (`notify daemon`) binds
@@ -416,7 +416,7 @@ The full text: [LICENSE](LICENSE).
 
 ```
 Copyright (C) 2024-2025 Tulir Asokan (the gomuks portions)
-Copyright (C) 2026 Progressive Matrix Client contributors
+Copyright (C) 2026 PCP Matrix Client contributors
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -431,14 +431,14 @@ GNU Affero General Public License for more details.
 
 ## Links
 
-- Website: [progressive.chat](https://progressive.chat)
-- Matrix room: [#community:progressive.chat](https://matrix.to/#/#community:progressive.chat)
+- Website: [pcp.chat](https://pcp.chat)
+- Matrix room: [#community:pcp.chat](https://matrix.to/#/#community:pcp.chat)
 
 ## Related projects
 
-- [progressive-android](https://github.com/progressive-chat/progressive-android) —
+- [pcp-android](https://github.com/pcp-chat/pcp-android) —
   the Android client
-- [progressive-core](https://github.com/progressive-chat/progressive-core) —
+- [pcp-core](https://github.com/pcp-chat/pcp-core) —
   the shared Qt-free Matrix core (fetched by this build)
 - [gomuks](https://github.com/tulir/gomuks) — the Go client this project
   started from (the `go-legacy` tag here)

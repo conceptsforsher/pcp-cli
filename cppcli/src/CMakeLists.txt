@@ -87,5 +87,5 @@ if(BUILD_TUI)
 endif()
 
 # Main executable: just main.cpp + the shared library
-add_executable(progressive-cli main.cpp)
-target_link_libraries(progressive-cli PRIVATE matrixcli_main)
+add_executable(pcp-cli main.cpp)
+target_link_libraries(pcp-cli PRIVATE matrixcli_main)

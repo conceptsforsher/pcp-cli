@@ -12,7 +12,7 @@ add_subdirectory(irc)
 add_subdirectory(deltachat)
 add_subdirectory(gomuks)
 # matrixcli_ecore is provided by the top-level CMakeLists via
-# FetchContent(progressive-core) — see cppcli/CMakeLists.txt.
+# FetchContent(pcp-core) — see cppcli/CMakeLists.txt.
 
 if(BUILD_TUI)
     add_subdirectory(tui)

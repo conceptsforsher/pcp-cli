@@ -292,7 +292,7 @@ int demoMembersShowcase(db::Database& dbi, const std::string& roomArg) {
         std::string label = a.empty() ? r.value("name", "") : a;
         std::cout << "    " << label << " (" << r.value("member_count", 0) << ")\n";
     }
-    std::cout << "  Run: progressive-cli demo members <alias>\n";
+    std::cout << "  Run: pcp-cli demo members <alias>\n";
     return 0;
 }
 
@@ -315,7 +315,7 @@ int demoTypingShowcase(db::Database& dbi) {
         }
     }
     if (!any) std::cout << "  Nobody is typing now.\n";
-    std::cout << "  Live: progressive-cli typing <room> shows who is currently typing.\n";
+    std::cout << "  Live: pcp-cli typing <room> shows who is currently typing.\n";
     return 0;
 }
 
@@ -352,7 +352,7 @@ int demoEditShowcase(db::Database& dbi) {
               << "|         -> edits in place for everyone):\n"
               << "|   * " << updated << "\n"
               << "+------------------------------------------------+\n";
-    std::cout << "[demo] Live: progressive-cli edit " << name << " " << ev.event_id
+    std::cout << "[demo] Live: pcp-cli edit " << name << " " << ev.event_id
               << " <text>\n";
     return 0;
 }
@@ -397,7 +397,7 @@ int demoReportShowcase(db::Database& dbi) {
     std::cout << "| -> Reported " << ev.event_id << " to the homeserver admin (reason: "
               << reason << (note.empty() ? "" : ", note: " + note) << ")\n"
               << "+------------------------------------------------+\n";
-    std::cout << "[demo] Live: progressive-cli report " << name << " " << ev.event_id
+    std::cout << "[demo] Live: pcp-cli report " << name << " " << ev.event_id
               << " --reason " << reason << "\n";
     return 0;
 }
@@ -423,7 +423,7 @@ int demoTopicShowcase(db::Database& dbi) {
     std::string updated = (b == std::string::npos) ? cur : nl;
     std::cout << "| Result (sends m.room.topic state event):\n|   " << updated << "\n"
               << "+------------------------------------------------+\n";
-    std::cout << "[demo] Live: progressive-cli topic " << name << " <text>\n";
+    std::cout << "[demo] Live: pcp-cli topic " << name << " <text>\n";
     return 0;
 }
 
@@ -464,7 +464,7 @@ int demoThreadsShowcase(db::Database& dbi) {
         std::cout << "|   `- " << demoShortSender(rp.sender) << ": " << b << "\n";
     }
     std::cout << "+------------------------------------------------+\n";
-    std::cout << "[demo] Live: progressive-cli threads " << name << " (opens the thread timeline)\n";
+    std::cout << "[demo] Live: pcp-cli threads " << name << " (opens the thread timeline)\n";
     return 0;
 }
 
@@ -488,7 +488,7 @@ int demoConfigShowcase(db::Database& dbi) {
     std::cout << "max_messages    = 200\n";
     std::cout << "date_format     = %H:%M\n";
 #endif
-    std::cout << "\nSet:  progressive-cli config --set key value\n";
+    std::cout << "\nSet:  pcp-cli config --set key value\n";
     return 0;
 }
 
@@ -503,17 +503,17 @@ int demoBackupShowcase(db::Database& dbi) {
     std::string key = "AAAA-BBBB-CCCC-DDDD-EEEE-FFFF-GGGG-HHHH";
     std::cout << "\n[demo] create -> Key backup created. SAVE THIS RECOVERY KEY (shown once):\n\n"
               << "  " << key << "\n\n";
-    std::cout << "[demo] Live: progressive-cli backup create | upload | restore --recovery-key <key> | delete\n";
+    std::cout << "[demo] Live: pcp-cli backup create | upload | restore --recovery-key <key> | delete\n";
     return 0;
 }
 
 // ---- Interactive demo REPL (offline, no Matrix account needed) ----
 //
 // Replaces the old `demo` behavior (which started an HTTP API server on
-// port 8080). Now `progressive-cli demo` drops the user into an interactive
+// port 8080). Now `pcp-cli demo` drops the user into an interactive
 // terminal session against the offline demo database: type commands, see
 // output, same handlers as the real CLI (rooms/view/search). The web demo
-// stays available as `progressive-cli serve --demo`.
+// stays available as `pcp-cli serve --demo`.
 
 void demoMarkdownShowcase() {
     static const char* kSample =

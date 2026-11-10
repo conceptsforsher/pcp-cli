@@ -4,7 +4,7 @@
 
 namespace matrixcli { namespace api {
 
-MatrixHandler::MatrixHandler(progressive::desktop::MatrixClient& client) : _client(client) {}
+MatrixHandler::MatrixHandler(pcp::desktop::MatrixClient& client) : _client(client) {}
 
 Response MatrixHandler::handleStatus(const Request& req) {
     Response resp;
@@ -22,7 +22,7 @@ Response MatrixHandler::handleStatus(const Request& req) {
     if (fmt == Format::Text) {
         resp.content_type = "text/plain";
         std::ostringstream oss;
-        oss << "Progressive Chat CLI\n"
+        oss << "PCP CLI\n"
             << "══════════════════════════════════════\n"
             << "Logged in: " << (j["logged_in"].get<bool>() ? "yes" : "no") << "\n";
         if (_client.isLoggedIn()) {
