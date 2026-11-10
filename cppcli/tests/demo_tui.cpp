@@ -75,14 +75,14 @@ static void applyConnectionChoice(matrixcli::matrix::Client& client,
     }
     matrixcli::Config::instance().save();
 
-    progressive::desktop::ProxyConfig gp;
+    pcp::desktop::ProxyConfig gp;
     gp.enabled = enabled;
     gp.host = pc.host;
     gp.port = pc.port;
     gp.type = pc.type == matrixcli::http::ProxyType::HTTP
-                  ? progressive::desktop::ProxyConfig::Type::Http
-                  : progressive::desktop::ProxyConfig::Type::Socks5Hostname;
-    progressive::desktop::setGlobalProxy(gp);
+                  ? pcp::desktop::ProxyConfig::Type::Http
+                  : pcp::desktop::ProxyConfig::Type::Socks5Hostname;
+    pcp::desktop::setGlobalProxy(gp);
 }
 
 #include "demo_tui.hpp"
@@ -116,7 +116,7 @@ int cmdTUI(const matrixcli::cli::Args& args) {
         client.initCrypto(acc.user_id, acc.device_id);
     }
 
-    // Offline agent mode: `progressive-cli tui agent [task]` — no Matrix login
+    // Offline agent mode: `pcp-cli tui agent [task]` — no Matrix login
     // needed. The TUI opens straight into the chat with a virtual #agent
     // room; /agent, /agent-code and /llm work (the live Matrix tools
     // answer "no matrix session", the cache-backed ones work offline).
@@ -249,7 +249,7 @@ int cmdTUI(const matrixcli::cli::Args& args) {
             chat.setQuitCheck([]() { return !matrixcli::g_interrupted.load(); });
 
             // The Matrix agent launcher — shared by the /agent slash
-            // command and the `progressive-cli tui agent <task>` auto-start.
+            // command and the `pcp-cli tui agent <task>` auto-start.
             static std::atomic<bool> agentBusy{false};
             auto launchMatrixAgent = [&](const std::string& task) {
                 if (task.empty()) return;
@@ -498,7 +498,7 @@ int cmdTUI(const matrixcli::cli::Args& args) {
             }  // !agentOnly
 
             // Offline agent mode with a task: fire the agent once on
-            // startup (`progressive-cli tui agent <task>`).
+            // startup (`pcp-cli tui agent <task>`).
             if (agentOnly && !agentTask.empty()) launchMatrixAgent(agentTask);
 
             chat.run(screen);

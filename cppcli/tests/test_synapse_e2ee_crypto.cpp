@@ -1,7 +1,7 @@
 #include "test_synapse_helpers.hpp"
 
 static bool test_sas_verified_policy(const std::string& hs, TestUser& alice, TestUser& bob) {
-    using namespace progressive::desktop;
+    using namespace pcp::desktop;
     std::string pass = "synapse_test_pass_42";
 
     // Fresh login -> alice's new device (A3) + an encrypted room with A1 + A3.
@@ -201,7 +201,7 @@ static bool test_sas_verified_policy(const std::string& hs, TestUser& alice, Tes
 
     // Cross-sign bob's master key with A1's USK (the sync engine does this
     // automatically on a SAS Done with the MSK exchange).
-    std::string xsContent = progressive::desktop::buildCrossSigningContent(
+    std::string xsContent = pcp::desktop::buildCrossSigningContent(
         "m.cross_signing.master", bobKeys.masterPub,
         a1Keys.userPub, a1Keys.userPriv, bob.userId, alice.userId);
     // The server's _process_other_signatures looks up the target's master key
@@ -215,16 +215,16 @@ static bool test_sas_verified_policy(const std::string& hs, TestUser& alice, Tes
           "sas: bob's master key carries A1's USK signature");
     // The trust computation must upgrade bob's devices to Verified via our USK.
     bool bobIdentityVerified = false;
-    for (const auto& tr : progressive::desktop::computeDeviceTrust(
+    for (const auto& tr : pcp::desktop::computeDeviceTrust(
             qBob.data, bob.userId, alice.userId, a1Keys.userPub)) {
-        if (tr.trust == progressive::desktop::DeviceTrust::Verified) bobIdentityVerified = true;
+        if (tr.trust == pcp::desktop::DeviceTrust::Verified) bobIdentityVerified = true;
     }
     CHECK(bobIdentityVerified, "sas: bob's devices Verified via our USK cross-signature");
     return true;
 }
 
 static bool test_key_backup_api(const std::string& hs, TestUser& alice) {
-    using namespace progressive::desktop;
+    using namespace pcp::desktop;
     std::string pass = "synapse_test_pass_42";
 
     // A room with a real outbound session + one encrypted message.
@@ -308,7 +308,7 @@ static bool test_key_backup_api(const std::string& hs, TestUser& alice) {
 }
 
 static bool test_ssss_api(const std::string& hs, TestUser& alice) {
-    using namespace progressive::desktop;
+    using namespace pcp::desktop;
 
     auto keys = publishCrossSigning(alice);  // alice's current cross-signing keys
     CHECK(!keys.masterPriv.empty(), "ssss-api: cross-signing keys present");

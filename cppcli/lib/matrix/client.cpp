@@ -554,7 +554,7 @@ Credentials Client::registerAccountWithAuth(
         {"password", password},
         {"auth", json::parse(auth_json)}
     };
-    req["initial_device_display_name"] = "progressive-ttys";
+    req["initial_device_display_name"] = "pcp-ttys";
 
     auto url = hs_url.empty()
         ? buildUrl("/_matrix/client/v3/register")

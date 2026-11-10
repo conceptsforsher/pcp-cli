@@ -17,9 +17,9 @@
 #include "agent_tools.hpp"
 #include "matrix_agent.hpp"
 #include "ascii_ui.hpp"
-#include <progressive/llm.hpp>
-#include <progressive/typing_indicator.hpp>
-#include <progressive/typing_utils.hpp>
+#include <pcp/llm.hpp>
+#include <pcp/typing_indicator.hpp>
+#include <pcp/typing_utils.hpp>
 #include <nlohmann/json.hpp>
 #include <chrono>
 #include <algorithm>
@@ -49,7 +49,7 @@ int cmdAgent(const cli::Args& args);
 int cmdTyping(const cli::Args& args) {
     if (!pcore::requireSession()) return 1;
     if (args.positional.empty()) {
-        std::cerr << "Usage: progressive-cli typing <room>" << std::endl;
+        std::cerr << "Usage: pcp-cli typing <room>" << std::endl;
         return 1;
     }
     std::string target = args.positional[0];
@@ -58,7 +58,7 @@ int cmdTyping(const cli::Args& args) {
     // One-shot sync; capture typing users for the target room.
     auto done = std::make_shared<std::atomic<bool>>(false);
     std::string captured;
-    pcore::startSync([&](const progressive::desktop::FastSyncResponse& resp) {
+    pcore::startSync([&](const pcp::desktop::FastSyncResponse& resp) {
         for (auto& [roomIdView, room] : resp.joinedRooms) {
             if (std::string(roomIdView) == target || !room.typingUsers.empty()) {
                 if (captured.empty()) {
@@ -105,7 +105,7 @@ int cmdTyping(const cli::Args& args) {
 static int cmdAgentCode(const cli::Args& args) {
     using namespace matrixcli::agenttools;
     if (args.positional.empty()) {
-        std::cerr << "Usage: progressive-cli agent-code <prompt> [--provider openai|anthropic]"
+        std::cerr << "Usage: pcp-cli agent-code <prompt> [--provider openai|anthropic]"
                      " [--endpoint url] [--model m] [--key k]"
                      " [--trust allow|ask|deny] [--verbose]" << std::endl;
         return 1;

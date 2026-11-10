@@ -9,36 +9,36 @@ option(BUILD_TESTS "Build tests" ON)
 option(BUILD_TUI "Build terminal UI" ON)
 option(USE_SYSTEM_OLM "Use system libolm" OFF)
 
-# --- Canonical core: progressive-chat/progressive-core (FetchContent) ---
+# --- Canonical core: pcp-chat/pcp-core (FetchContent) ---
 # The shared Qt-free core (matrix_client, sync_engine, decryptor, …) — it
 # also brings its own libolm 3.2.16, which is why the olm import below is
 # guarded by if(NOT TARGET olm).
 include(FetchContent)
 FetchContent_Declare(
-    progressive-core
-    GIT_REPOSITORY https://github.com/progressive-chat/progressive-core.git
+    pcp-core
+    GIT_REPOSITORY https://github.com/pcp-chat/pcp-core.git
     GIT_TAG        main
     GIT_SHALLOW    TRUE
 )
-set(PROGRESSIVE_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(PCP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 # Download the prebuilt core for this commit (fast builds). Falls back to
 # compiling from source automatically when the artifact isn't published yet.
-# Cross builds (e.g. armv7) pass -DPROGRESSIVE_CORE_USE_ARTIFACT=OFF to
+# Cross builds (e.g. armv7) pass -DPCP_CORE_USE_ARTIFACT=OFF to
 # build the core from source — the prebuilt artifact is x86_64/aarch64.
-if(NOT DEFINED PROGRESSIVE_CORE_USE_ARTIFACT)
-    set(PROGRESSIVE_CORE_USE_ARTIFACT ON CACHE BOOL "" FORCE)
+if(NOT DEFINED PCP_CORE_USE_ARTIFACT)
+    set(PCP_CORE_USE_ARTIFACT ON CACHE BOOL "" FORCE)
 endif()
-FetchContent_MakeAvailable(progressive-core)
+FetchContent_MakeAvailable(pcp-core)
 # Keep the historical target name so all consumers (api, src, tui) link
 # unchanged against the fetched core.
-add_library(matrixcli_ecore ALIAS progressive_core)
+add_library(matrixcli_ecore ALIAS pcp_core)
 
 # libolm — only when the fetched canonical core hasn't provided one yet
-# (progressive-core brings its own olm 3.2.16 via FetchContent).
+# (pcp-core brings its own olm 3.2.16 via FetchContent).
 find_package(Threads REQUIRED)
 find_package(OpenSSL REQUIRED)
 
-# libolm — the fetched canonical core (progressive-core) brings its own
+# libolm — the fetched canonical core (pcp-core) brings its own
 # olm 3.2.16 via FetchContent (cached in the build tree). The system
 # libolm is the fallback knob for the packagers (USE_SYSTEM_OLM=ON).
 if(NOT TARGET olm)

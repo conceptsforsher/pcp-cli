@@ -1,6 +1,6 @@
 // src/ascii_ui.cpp — ASCII-drawn client interface for the CLI (not the TUI).
 //
-// `progressive-cli ui` draws a chat-client-like layout with plain characters:
+// `pcp-cli ui` draws a chat-client-like layout with plain characters:
 // a header, a left panel with the room list, the open room's messages in
 // the center and the member list on the right, panels separated by pipes.
 // It is a REPL: every command executes and the whole frame is redrawn —
@@ -51,9 +51,9 @@ namespace matrixcli {
 
 void printAbout(const std::string& proxyLabel, const std::string& accountLabel) {
     const char* X = "\x1b[0m";
-    std::cout << "\x1b[1;31mprogressive-cli\x1b[0m"
+    std::cout << "\x1b[1;31mpcp-cli\x1b[0m"
               << " — the Matrix chat client and coding agent, designed to work in the terminal\n";
-    std::cout << "(c) Progressive Chat contributors\n\n";
+    std::cout << "(c) PCP contributors\n\n";
     const char* BR = "\x1b[1;31m";  // bold red
     std::cout << BR << "       /\n";
     std::cout << "      /\n";
@@ -63,12 +63,12 @@ void printAbout(const std::string& proxyLabel, const std::string& accountLabel) 
     std::cout << "/" << X << "\n";
     std::cout << "      — chat progress, always increasing —\n\n";
     std::string ver = cli::versionString();
-    // "progressive-cli v0.5.4" → just the number part.
+    // "pcp-cli v0.5.4" → just the number part.
     size_t v = ver.rfind('v');
     std::cout << "Version: " << (v == std::string::npos ? ver : ver.substr(v + 1))
               << "\n";
     std::cout << "License: AGPL-3.0\n";
-    std::cout << "https://github.com/progressive-chat/progressive-cli\n";
+    std::cout << "https://github.com/pcp-chat/pcp-cli\n";
     (void)proxyLabel; (void)accountLabel;
 }
 
@@ -154,7 +154,7 @@ bool readLineWithHistory(std::vector<std::string>& history,
     return ok;
 }
 
-// One-shot 'progressive-cli about' — the about screen without the ui.
+// One-shot 'pcp-cli about' — the about screen without the ui.
 int cmdAbout(const cli::Args&) {
     // No session/network init — the about screen must be clean and instant.
     printAbout("", "");

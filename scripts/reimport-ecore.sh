@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# scripts/reimport-ecore.sh — re-import progressive-desktop core changes into
+# scripts/reimport-ecore.sh — re-import pcp-desktop core changes into
 # cppcli/lib/ecore (byte-identical copies, provenance recorded in README).
 #
 # The vendored core is a byte-identical copy of the desktop's Qt-free layer.
@@ -12,12 +12,12 @@
 #   ./scripts/reimport-ecore.sh --apply    # copy changed files + update README
 #   ./scripts/reimport-ecore.sh --apply --rebuild   # ... then rebuild + ctest
 #
-# Env: PROGRESSIVE_DESKTOP_DIR (default ~/progressive-desktop)
+# Env: PCP_DESKTOP_DIR (default ~/pcp-desktop)
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-D="${PROGRESSIVE_DESKTOP_DIR:-$HOME/progressive-desktop}"
-PN="$D/third_party/progressive-android-experiments/progressive/src/main/cpp"
+D="${PCP_DESKTOP_DIR:-$HOME/pcp-desktop}"
+PN="$D/third_party/pcp-android-experiments/pcp/src/main/cpp"
 E="$ROOT/cppcli/lib/ecore"
 
 APPLY=0
@@ -29,11 +29,11 @@ for a in "$@"; do
     esac
 done
 
-[ -d "$D/src/core" ] || { echo "FAIL: desktop repo not found at $D (set PROGRESSIVE_DESKTOP_DIR)"; exit 1; }
+[ -d "$D/src/core" ] || { echo "FAIL: desktop repo not found at $D (set PCP_DESKTOP_DIR)"; exit 1; }
 [ -d "$PN/src" ] || { echo "FAIL: native submodule not found under $D"; exit 1; }
 
 DESKTOP_HEAD=$(git -C "$D" rev-parse HEAD)
-NATIVE_HEAD=$(git -C "$D/third_party/progressive-android-experiments" rev-parse HEAD)
+NATIVE_HEAD=$(git -C "$D/third_party/pcp-android-experiments" rev-parse HEAD)
 
 echo ">> Desktop core: ${DESKTOP_HEAD:0:7} (git)"
 echo ">> Native:       ${NATIVE_HEAD:0:7} (git)"
@@ -70,13 +70,13 @@ for f in $(cd "$E/native" && ls *.cpp 2>/dev/null | sort); do
     copy_if_changed "$PN/src/$f" "$E/native/$f"
 done
 
-# ecore/native/progressive/*.hpp <-> native include/progressive/*.hpp
-for f in $(cd "$E/native/progressive" 2>/dev/null && ls *.hpp | sort); do
-    copy_if_changed "$PN/include/progressive/$f" "$E/native/progressive/$f"
+# ecore/native/pcp/*.hpp <-> native include/pcp/*.hpp
+for f in $(cd "$E/native/pcp" 2>/dev/null && ls *.hpp | sort); do
+    copy_if_changed "$PN/include/pcp/$f" "$E/native/pcp/$f"
 done
 
-# android shim (android/log.h + progressive_compat.h)
-copy_if_changed "$D/third_party/android_shim/progressive_compat.h" "$E/native/progressive_compat.h"
+# android shim (android/log.h + pcp_compat.h)
+copy_if_changed "$D/third_party/android_shim/pcp_compat.h" "$E/native/pcp_compat.h"
 copy_if_changed "$D/third_party/android_shim/android/log.h" "$E/native/android/log.h"
 
 # New desktop core files not yet vendored (worth reviewing)

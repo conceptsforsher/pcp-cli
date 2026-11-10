@@ -1,11 +1,11 @@
-# Maintainer: Progressive Chat Team <dev@progressive.chat>
+# Maintainer: PCP Team <dev@pcp.chat>
 
-pkgname=progressive-cli
+pkgname=pcp-cli
 pkgver=0.1.0
 pkgrel=1
 pkgdesc="A terminal Matrix client with E2EE, multi-format REST API, and ncurses TUI"
 arch=('x86_64')
-url="https://github.com/progressive-chat/progressive-cli"
+url="https://github.com/pcp-chat/pcp-cli"
 license=('AGPL-3.0-or-later')
 depends=(
     'gcc-libs'
@@ -25,7 +25,7 @@ makedepends=(
 optdepends=(
     'libnotify: desktop notifications via notify-send'
 )
-source=("${pkgname}::git+https://github.com/progressive-chat/progressive-cli.git#branch=main")
+source=("${pkgname}::git+https://github.com/pcp-chat/pcp-cli.git#branch=main")
 md5sums=('SKIP')
 
 pkgver() {
@@ -49,17 +49,17 @@ build() {
 package() {
     cd "${srcdir}/${pkgname}"
 
-    install -Dm755 cppcli/build/src/progressive-cli "${pkgdir}/usr/bin/progressive-cli"
+    install -Dm755 cppcli/build/src/pcp-cli "${pkgdir}/usr/bin/pcp-cli"
     # The compat symlink for the pre-rebrand scripts.
-    ln -s progressive-cli "${pkgdir}/usr/bin/matrixcli"
+    ln -s pcp-cli "${pkgdir}/usr/bin/matrixcli"
 
     install -Dm644 gomuks/LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
     install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
 
     # Optional systemd user unit for the notification forwarding daemon
-    # (installed, not enabled: systemctl --user enable progressive-cli-notify)
-    install -Dm644 packaging/arch/progressive-cli-notify.service \
-        "${pkgdir}/usr/lib/systemd/user/progressive-cli-notify.service"
+    # (installed, not enabled: systemctl --user enable pcp-cli-notify)
+    install -Dm644 packaging/arch/pcp-cli-notify.service \
+        "${pkgdir}/usr/lib/systemd/user/pcp-cli-notify.service"
 
     # Desktop entry
     install -dm755 "${pkgdir}/usr/share/applications"

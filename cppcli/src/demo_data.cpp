@@ -255,9 +255,9 @@ int populateDemoData(matrixcli::db::Database& dbi) {
     int64_t ts = std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::system_clock::now().time_since_epoch()).count();
     struct { const char* room; const char* sender; const char* name; const char* body; } msgs[] = {
-        {"!general:demo.local","@alice","Alice","Welcome! This is progressive-cli — a terminal Matrix client."},
+        {"!general:demo.local","@alice","Alice","Welcome! This is pcp-cli — a terminal Matrix client."},
         {"!general:demo.local","@bob","Bob","Supports E2EE, SQLite cache, multi-format REST API."},
-        {"!general:demo.local","@alice","Alice","Try: progressive-cli tui, progressive-cli view, progressive-cli send"},
+        {"!general:demo.local","@alice","Alice","Try: pcp-cli tui, pcp-cli view, pcp-cli send"},
         {"!general:demo.local","@alice","Alice","Multiline demo message:\nline one\nline two\nline three"},
         {"!dev:demo.local","@charlie","Charlie","C++20, raw sockets + OpenSSL, no external HTTP libs."},
         {"!dev:demo.local","@alice","Alice","CMake build, 5 format renderers, full Matrix CS API."},
@@ -265,7 +265,7 @@ int populateDemoData(matrixcli::db::Database& dbi) {
         {"!dm_alice:demo.local","@alice","Alice","Hey! This is a private encrypted DM."},
         {"!dm_alice:demo.local","@you","You","Hi Alice! The ascii client is really nice."},
         {"!dm_alice:demo.local","@alice","Alice","Glad you like it — and the DMs work offline too."},
-        {"!dm_bob:demo.local","@bob","Bob","Try progressive-cli view \"!dm_bob:demo.local\""},
+        {"!dm_bob:demo.local","@bob","Bob","Try pcp-cli view \"!dm_bob:demo.local\""},
         {"!dm_bob:demo.local","@you","You","Will do — I sent you a file by the way."},
         {"!dm_bob:demo.local","@bob","Bob","Got it, report.pdf looks good."},
     };
@@ -747,6 +747,6 @@ int populateDemoData(matrixcli::db::Database& dbi) {
     populateDemoDataExtras(dbi);
     std::cout << "Populated DB: " << (sizeof(rooms)/sizeof(rooms[0])) << " rooms, "
               << (sizeof(msgs)/sizeof(msgs[0])) + 2 + 4 << " messages (incl. a thread)." << std::endl;
-    std::cout << "Try:  progressive-cli rooms | progressive-cli view #general | progressive-cli view #dev" << std::endl;
+    std::cout << "Try:  pcp-cli rooms | pcp-cli view #general | pcp-cli view #dev" << std::endl;
     return 0;
 }

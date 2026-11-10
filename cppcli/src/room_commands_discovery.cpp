@@ -9,7 +9,7 @@
 #include "../lib/database/db.hpp"
 #include "../lib/matrix/client.hpp"
 #include "../lib/util/string_utils.hpp"
-#include <progressive/markdown.hpp>
+#include <pcp/markdown.hpp>
 #include <nlohmann/json.hpp>
 #include <algorithm>
 #include <atomic>
@@ -220,7 +220,7 @@ int cmdLink(const cli::Args& args) {
         }
         if (bestRoom.empty()) {
             std::cerr << "No rooms with messages in the cache.\n";
-            std::cerr << "Usage: progressive-cli link <room> [last|first|N|-N] "
+            std::cerr << "Usage: pcp-cli link <room> [last|first|N|-N] "
                          "[--last] [--first] [--n N] [--from-end N] [--event $id] "
                          "[--via N] [--copy] [--clip]\n";
             return 1;

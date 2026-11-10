@@ -59,7 +59,7 @@ void Notifications::send(const std::string& title, const std::string& body) {
     // runs it as part of plasmashell, so qdbus6 reaches the same tray).
     if (system("which notify-send >/dev/null 2>&1") == 0) {
         std::string cmd = "notify-send " + shQuote(t) + " " + shQuote(b) +
-                          " --app-name=progressive-cli "
+                          " --app-name=pcp-cli "
                           "--icon=dialog-information &";
         if (system(cmd.c_str()) != 0) {
             Logger::instance().error("notify-send failed");
@@ -73,7 +73,7 @@ void Notifications::send(const std::string& title, const std::string& body) {
                           " org.freedesktop.Notifications "
                           "/org/freedesktop/Notifications "
                           "org.freedesktop.Notifications.Notify "
-                          "progressive-cli 0 dialog-information " +
+                          "pcp-cli 0 dialog-information " +
                           shQuote(t) + " " + shQuote(b) + " &";
         system(cmd.c_str());
     }

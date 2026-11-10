@@ -17,19 +17,19 @@ make -j$(nproc)
 ./matrixcli
 
 # Start API server
-./progressive-cli serve --port 8080
+./pcp-cli serve --port 8080
 
 # Login (username accepts localpart "me" or full @me:matrix.org; --mxid alias)
-./progressive-cli login --homeserver https://matrix.org --username me --password xxxxx
-./progressive-cli login --homeserver https://matrix.org --mxid @me:matrix.org --password xxxxx
+./pcp-cli login --homeserver https://matrix.org --username me --password xxxxx
+./pcp-cli login --homeserver https://matrix.org --mxid @me:matrix.org --password xxxxx
 # ...or interactively (password hidden):
-./progressive-cli login --homeserver https://matrix.org --interactive
+./pcp-cli login --homeserver https://matrix.org --interactive
 
 # Register a new account (m.login.dummy)
-./progressive-cli login --register --homeserver https://matrix.org --username newuser --password xxxxx
+./pcp-cli login --register --homeserver https://matrix.org --username newuser --password xxxxx
 
 # Register with a registration token (m.login.registration_token)
-./progressive-cli login --register --homeserver https://matrix.org --username newuser --password xxxxx --reg-token s3cret
+./pcp-cli login --register --homeserver https://matrix.org --username newuser --password xxxxx --reg-token s3cret
 
 # Route ALL traffic through Tor (SOCKS5, DNS resolved by the proxy — no leaks)
 ./matrixcli proxy on --host 127.0.0.1 --port 9050 --type socks5h
@@ -53,5 +53,5 @@ make -j$(nproc)
 
 AGPL-3.0-or-later (see [LICENSE](../LICENSE)).
 
-This is a derivative work of gomuks (AGPLv3) and of the Progressive Chat
+This is a derivative work of gomuks (AGPLv3) and of the PCP
 Android client's native C++ layer (AGPLv3).

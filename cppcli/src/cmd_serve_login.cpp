@@ -18,7 +18,7 @@
 #include "commands.hpp"
 #include "core/http_client.hpp"
 #include "core/crypto/media_crypto.hpp"
-#include "progressive/mas_auth.hpp"
+#include "pcp/mas_auth.hpp"
 #include <simdjson.h>
 #include "globals.hpp"
 #include "pcore.hpp"
@@ -105,7 +105,7 @@ int cmdServe(const matrixcli::cli::Args& args) {
         } catch (const std::exception& e) {
             std::cerr << "Error: " << e.what() << std::endl;
             std::cerr << "  Is the port already in use? Try a different one:"
-                      << " progressive-cli serve --ttys --port <other>" << std::endl;
+                      << " pcp-cli serve --ttys --port <other>" << std::endl;
             return 1;
         }
         std::cout << "ttys server running on http://" << bindAddr << ":" << port
@@ -144,7 +144,7 @@ int cmdServe(const matrixcli::cli::Args& args) {
 
         // Feed the offline cache from every /sync response (the bridge keeps
         // view/rooms/search/API working on the legacy db::Database store).
-        pcore::startSync([](const progressive::desktop::FastSyncResponse& resp) {
+        pcore::startSync([](const pcp::desktop::FastSyncResponse& resp) {
             pcore::feedCache(resp);
         });
         util::Logger::instance().info("Background sync started (vendored desktop core)");
@@ -159,7 +159,7 @@ int cmdServe(const matrixcli::cli::Args& args) {
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
         std::cerr << "  Is the port already in use? Try a different one:"
-                  << " progressive-cli serve --port <other>" << std::endl;
+                  << " pcp-cli serve --port <other>" << std::endl;
         pcore::stopSync();
         return 1;
     }
@@ -205,11 +205,11 @@ int cmdServe(const matrixcli::cli::Args& args) {
         auto& core = pcore::core();
         std::string resolvedHs = homeserver;
         while (!resolvedHs.empty() && resolvedHs.back() == '/') resolvedHs.pop_back();
-        progressive::desktop::AccountInfo staged;
+        pcp::desktop::AccountInfo staged;
         staged.homeserverUrl = resolvedHs;
         staged.accessToken = at_it->second;
         core.client->setAccount(staged);
-        auto who = progressive::desktop::httpGet(
+        auto who = pcp::desktop::httpGet(
             resolvedHs + "/_matrix/client/v3/account/whoami",
             {{"Authorization", "Bearer " + at_it->second}}, 15000);
         if (!who.success || who.statusCode != 200) {
@@ -315,7 +315,7 @@ int cmdServe(const matrixcli::cli::Args& args) {
             std::cerr << "SSO login failed." << std::endl;
             return 1;
         }
-        progressive::desktop::AccountInfo staged;
+        pcp::desktop::AccountInfo staged;
         staged.homeserverUrl = resolvedHs;
         staged.accessToken = r.access_token;
         staged.userId = r.user_id;
@@ -434,16 +434,16 @@ int cmdServe(const matrixcli::cli::Args& args) {
             }
             resolvedHs = disc.data;
         }
-        progressive::desktop::AccountInfo staged;
+        pcp::desktop::AccountInfo staged;
         staged.homeserverUrl = resolvedHs;
         core.client->setAccount(staged);
 
-        progressive::desktop::AccountInfo acct;
+        pcp::desktop::AccountInfo acct;
         if (args.options.count("mas")) {
             // Native MAS login (m.login.password) — no browser, uses the
-            // progressive-core mas_* helpers. Surfaces a CAPTCHA fallback URL
+            // pcp-core mas_* helpers. Surfaces a CAPTCHA fallback URL
             // when the server requires one.
-            auto mr = progressive::masPasswordLogin(resolvedHs, username, password,
+            auto mr = pcp::masPasswordLogin(resolvedHs, username, password,
                                                     "matrixcli", true);
             if (!mr.success) {
                 std::string err = mr.errorMessage.empty() ? "login failed" : mr.errorMessage;
@@ -451,7 +451,7 @@ int cmdServe(const matrixcli::cli::Args& args) {
                 std::cerr << "MAS login failed: " << err;
                 if (mr.needsCaptcha)
                     std::cerr << " (captcha required — open: "
-                              << progressive::masCaptchaFallbackUrl(
+                              << pcp::masCaptchaFallbackUrl(
                                      resolvedHs, "m.login.recaptcha", mr.captchaSession)
                               << ")";
                 std::cerr << std::endl;
@@ -583,11 +583,11 @@ int cmdServe(const matrixcli::cli::Args& args) {
             resolvedHs = disc.data;
         }
 
-        progressive::desktop::AccountInfo acct;
+        pcp::desktop::AccountInfo acct;
         if (args.options.count("mas")) {
             // Native MAS / generic Matrix UIA registration. Email verification
             // is done in-process; only the CAPTCHA stage needs a browser.
-            auto begin = progressive::masBeginRegistration(resolvedHs);
+            auto begin = pcp::masBeginRegistration(resolvedHs);
             if (!begin.success) {
                 std::string err = begin.errorMessage.empty() ? "registration failed"
                                                              : begin.errorMessage;
@@ -612,8 +612,8 @@ int cmdServe(const matrixcli::cli::Args& args) {
                     std::cerr << "Error: --email required for MAS registration" << std::endl;
                     return 1;
                 }
-                emailCs = progressive::masGenerateClientSecret();
-                auto em = progressive::masRequestRegistrationEmail(resolvedHs, email,
+                emailCs = pcp::masGenerateClientSecret();
+                auto em = pcp::masRequestRegistrationEmail(resolvedHs, email,
                                                                    emailCs, 1);
                 if (!em.success) {
                     std::string err = em.errorMessage.empty() ? "email request failed"
@@ -629,7 +629,7 @@ int cmdServe(const matrixcli::cli::Args& args) {
                 std::getline(std::cin, dummy);
             }
             std::cout << "Completing registration..." << std::endl;
-            auto res = progressive::masCompleteRegistration(resolvedHs, username, password,
+            auto res = pcp::masCompleteRegistration(resolvedHs, username, password,
                                                             begin.session, emailSid,
                                                             emailCs, false);
             if (!res.success) {
@@ -691,13 +691,13 @@ int cmdServe(const matrixcli::cli::Args& args) {
     matrix::Client client;
     client.setHomeserverURL(homeserver);
     // Route the legacy client through the same proxy as the core (if set).
-    extern bool activeProxyConfig(progressive::desktop::ProxyConfig* out);
-    progressive::desktop::ProxyConfig activeProxy;
+    extern bool activeProxyConfig(pcp::desktop::ProxyConfig* out);
+    pcp::desktop::ProxyConfig activeProxy;
     if (activeProxyConfig(&activeProxy)) {
         http::ProxyConfig legacyProxy;
         legacyProxy.host = activeProxy.host;
         legacyProxy.port = activeProxy.port;
-        legacyProxy.type = (activeProxy.type == progressive::desktop::ProxyConfig::Type::Http)
+        legacyProxy.type = (activeProxy.type == pcp::desktop::ProxyConfig::Type::Http)
                                ? http::ProxyType::HTTP : http::ProxyType::SOCKS5;
         legacyProxy.username = activeProxy.username;
         legacyProxy.password = activeProxy.password;

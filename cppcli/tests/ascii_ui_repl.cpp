@@ -1,6 +1,6 @@
 // src/ascii_ui.cpp — ASCII-drawn client interface for the CLI (not the TUI).
 //
-// `progressive-cli ui` draws a chat-client-like layout with plain characters:
+// `pcp-cli ui` draws a chat-client-like layout with plain characters:
 // a header, a left panel with the room list, the open room's messages in
 // the center and the member list on the right, panels separated by pipes.
 // It is a REPL: every command executes and the whole frame is redrawn —
@@ -52,7 +52,7 @@ namespace matrixcli {
 int cmdAsciiUi(const cli::Args& args) {
     db::Database dbi;
     if (!dbi.open("matrixcli.db")) {
-        std::cerr << "Cannot open matrixcli.db — run 'progressive-cli demo populate' first"
+        std::cerr << "Cannot open matrixcli.db — run 'pcp-cli demo populate' first"
                   << std::endl;
         return 1;
     }
@@ -62,7 +62,7 @@ int cmdAsciiUi(const cli::Args& args) {
     st.rooms = dbi.listRooms();
     sortRoomsByActivity(st);
     if (st.rooms.empty()) {
-        std::cerr << "No rooms cached. Run 'progressive-cli demo populate' or sync first."
+        std::cerr << "No rooms cached. Run 'pcp-cli demo populate' or sync first."
                   << std::endl;
         return 1;
     }
@@ -552,7 +552,7 @@ int cmdAsciiUi(const cli::Args& args) {
     }
 
     // Pure CLI / non-interactive mode: draw the frame once and exit
-    // (pipe-friendly: progressive-cli ui --static [room] | less).
+    // (pipe-friendly: pcp-cli ui --static [room] | less).
     if (args.options.count("static") || args.options.count("once") ||
         args.options.count("print")) {
         // Static mode: media previews only with --media (opt-in).

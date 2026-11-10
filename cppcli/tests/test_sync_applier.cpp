@@ -20,10 +20,10 @@ static int failures = 0;
     else { std::cout << "ok: " << msg << "\n"; } \
 } while (0)
 
-using namespace progressive::desktop;
+using namespace pcp::desktop;
 
 static void test_initialize_e2ee() {
-    using namespace progressive::desktop;
+    using namespace pcp::desktop;
     auto client = std::make_shared<MatrixClient>();
     AccountInfo acct;
     acct.userId = "@u:test";
@@ -170,21 +170,21 @@ int main() {
 
     // --- key-request retry backoff (pure decision) ---
     {
-        CHECK(!progressive::desktop::shouldReRequestKey(0, 40000),
+        CHECK(!pcp::desktop::shouldReRequestKey(0, 40000),
               "retry: attempt 0 (initial) never re-requests");
-        CHECK(!progressive::desktop::shouldReRequestKey(1, 29000),
+        CHECK(!pcp::desktop::shouldReRequestKey(1, 29000),
               "retry: first retry needs >=30s");
-        CHECK(progressive::desktop::shouldReRequestKey(1, 31000),
+        CHECK(pcp::desktop::shouldReRequestKey(1, 31000),
               "retry: first retry after 30s");
-        CHECK(!progressive::desktop::shouldReRequestKey(2, 119000),
+        CHECK(!pcp::desktop::shouldReRequestKey(2, 119000),
               "retry: second retry needs >=2min");
-        CHECK(progressive::desktop::shouldReRequestKey(2, 121000),
+        CHECK(pcp::desktop::shouldReRequestKey(2, 121000),
               "retry: second retry after 2min");
-        CHECK(progressive::desktop::shouldReRequestKey(3, 601000),
+        CHECK(pcp::desktop::shouldReRequestKey(3, 601000),
               "retry: third retry after 10min");
-        CHECK(progressive::desktop::shouldReRequestKey(4, 3601000),
+        CHECK(pcp::desktop::shouldReRequestKey(4, 3601000),
               "retry: fourth retry after 1h");
-        CHECK(!progressive::desktop::shouldReRequestKey(5, 3601000),
+        CHECK(!pcp::desktop::shouldReRequestKey(5, 3601000),
               "retry: capped after 4 retries");
     }
 
@@ -267,7 +267,7 @@ int main() {
 
     // --- broken-Olm decrypt-reason enrichment ---
     {
-        progressive::desktop::Decryptor dec;
+        pcp::desktop::Decryptor dec;
         // Unmarked sender: unchanged.
         CHECK(dec.enrichDecryptError("skX", "no megolm session — waiting for room_key")
                   == "no megolm session — waiting for room_key",
@@ -282,8 +282,8 @@ int main() {
     }
     // --- megolm store clears on a fresh load (no cross-account bleed) ---
     {
-        progressive::desktop::MegolmStore store;
-        progressive::desktop::PendingEncryptedEvent p;
+        pcp::desktop::MegolmStore store;
+        pcp::desktop::PendingEncryptedEvent p;
         p.roomId = "!r:hs"; p.sessionId = "s"; p.senderKey = "k"; p.eventId = "$e";
         store.addPending(p);
         CHECK(store.pendingCount() == 1, "megolm: pending recorded");
