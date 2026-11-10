@@ -1,4 +1,4 @@
-// Smoke test for the vendored ecore (progressive-desktop E2EE core).
+// Smoke test for the vendored ecore (pcp-desktop E2EE core).
 // Exercises self-contained crypto pieces that need no MatrixClient/SessionStore:
 // OlmAccountStore (create/sign/pickle), ed25519Verify, SAS emoji computation.
 //
@@ -14,7 +14,7 @@
 #include "core/crypto/sas.hpp"
 #include "core/crypto/sas_emojis.hpp"
 
-using namespace progressive::desktop;
+using namespace pcp::desktop;
 
 static void test_olm_account() {
     OlmAccountStore acc;

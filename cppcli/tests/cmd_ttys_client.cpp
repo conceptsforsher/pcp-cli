@@ -1,4 +1,4 @@
-// progressive-cli ttys — thin client for `serve --ttys`.
+// pcp-cli ttys — thin client for `serve --ttys`.
 //
 // Runs under ANY local user (root, another machine's account, …): sends the
 // terminal size + the account (from config.json or explicit flags) to the
@@ -43,16 +43,16 @@ static int localTerminalHeight() {
     return 24 + 5;
 }
 
-// The proxy configured via `progressive-cli proxy on` (config.json) for the
+// The proxy configured via `pcp-cli proxy on` (config.json) for the
 // connection to the ttys server (useful when it is an onion/I2P host). The
 // env proxy (all_proxy/https_proxy) is picked up by lib/http on its own.
 static void applyConfiguredProxy(http::Client& http) {
-    progressive::desktop::ProxyConfig active;
+    pcp::desktop::ProxyConfig active;
     if (!activeProxyConfig(&active)) return;
     http::ProxyConfig p;
     p.host = active.host;
     p.port = active.port;
-    p.type = (active.type == progressive::desktop::ProxyConfig::Type::Http)
+    p.type = (active.type == pcp::desktop::ProxyConfig::Type::Http)
                  ? http::ProxyType::HTTP : http::ProxyType::SOCKS5;
     p.username = active.username;
     p.password = active.password;

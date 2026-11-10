@@ -127,7 +127,7 @@ int main(int argc, char* argv[]) {
     }
     signal(SIGTERM, signalHandler);
     bool quietStart = argc >= 2 && std::string(argv[1]) == "about";
-    progressive::crash::installCrashHandler(quietStart);
+    pcp::crash::installCrashHandler(quietStart);
 
     // Register all commands via registry (extensible, no if/else)
     extern void registerBuiltinCommands();
@@ -284,7 +284,7 @@ int main(int argc, char* argv[]) {
     if (cliHandler) return cliHandler(args);
 
     std::cerr << "Unknown command: " << args.command << "\n"
-              << "Run 'progressive-cli --help' for usage." << std::endl;
+              << "Run 'pcp-cli --help' for usage." << std::endl;
     return 1;
 }
 

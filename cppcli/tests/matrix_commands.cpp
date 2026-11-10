@@ -21,7 +21,7 @@ using namespace matrixcli;
 int cmdVote(const cli::Args& args) {
         // matrixcli vote room_id poll_event_id answer1,answer2
         if (args.positional.size() < 3) {
-            std::cerr << "Usage: progressive-cli vote <room> <poll_event_id> <answer1>[,answer2...]" << std::endl;
+            std::cerr << "Usage: pcp-cli vote <room> <poll_event_id> <answer1>[,answer2...]" << std::endl;
             return 1;
         }
         using namespace matrixcli;
@@ -50,7 +50,7 @@ int cmdVote(const cli::Args& args) {
 
 int cmdReact(const cli::Args& args) {
         if (args.positional.size() < 3) {
-            std::cerr << "Usage: progressive-cli react <room> <event_id> <emoji>" << std::endl;
+            std::cerr << "Usage: pcp-cli react <room> <event_id> <emoji>" << std::endl;
             return 1;
         }
         using namespace matrixcli;
@@ -74,7 +74,7 @@ int cmdReact(const cli::Args& args) {
 
 int cmdTopic(const cli::Args& args) {
         if (args.positional.size() < 2) {
-            std::cerr << "Usage: progressive-cli topic <room> <topic>" << std::endl;
+            std::cerr << "Usage: pcp-cli topic <room> <topic>" << std::endl;
             return 1;
         }
         using namespace matrixcli;
@@ -102,7 +102,7 @@ int cmdTopic(const cli::Args& args) {
 
 int cmdRoomname(const cli::Args& args) {
         if (args.positional.size() < 2) {
-            std::cerr << "Usage: progressive-cli roomname <room> <name>" << std::endl;
+            std::cerr << "Usage: pcp-cli roomname <room> <name>" << std::endl;
             return 1;
         }
         using namespace matrixcli;
@@ -124,7 +124,7 @@ int cmdRoomname(const cli::Args& args) {
 
 int cmdAvatar(const cli::Args& args) {
         if (args.positional.size() < 2) {
-            std::cerr << "Usage: progressive-cli avatar <room> <file|mxc_url>" << std::endl;
+            std::cerr << "Usage: pcp-cli avatar <room> <file|mxc_url>" << std::endl;
             return 1;
         }
         using namespace matrixcli;
@@ -190,7 +190,7 @@ int cmdRead(const cli::Args& args) {
                           << " read (receipts off — the marker was NOT sent)."
                           << std::endl;
             }
-        } else { std::cerr << "Usage: progressive-cli read <room> | progressive-cli read --all" << std::endl; return 1; }
+        } else { std::cerr << "Usage: pcp-cli read <room> | pcp-cli read --all" << std::endl; return 1; }
         return 0;
 }
 
@@ -357,10 +357,10 @@ int cmdNotify(const cli::Args& args) {
                 text += args.positional[i];
             }
             if (text.empty()) {
-                text = "This is the progressive-cli test notification. "
+                text = "This is the pcp-cli test notification. "
                        "It should appear as a popup (KDE Plasma, GNOME, ...).";
             }
-            return sendIt("progressive-cli test", text);
+            return sendIt("pcp-cli test", text);
         }
 
         if (sub == "last") {
@@ -403,7 +403,7 @@ int cmdNotifications(const cli::Args& args) {
             bool hl = n.value("highlight", false);
             std::cout << (hl ? ANSI_BOLD "★ " ANSI_RESET : "  ") << ansiUser(n["sender"], "[" + sender + "]") << " #" << room << "  " << body << std::endl;
         }
-        std::cout << "\nMark read: progressive-cli read <room> | progressive-cli read --all" << std::endl;
+        std::cout << "\nMark read: pcp-cli read <room> | pcp-cli read --all" << std::endl;
         return 0;
 }
 

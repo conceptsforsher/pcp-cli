@@ -471,7 +471,7 @@ Result run(const Config& cfg, const std::string& prompt,
             : cfg.subagentType == "general"
             ? "You are a general subagent of the matrixcli coding agent. "
               "Work on the delegated task and return a concise report."
-            : "You are a CLI coding agent running inside the progressive-cli "
+            : "You are a CLI coding agent running inside the pcp-cli "
               "Matrix client. You help with the local filesystem and the "
               "shell. Use the provided tools for anything that needs the "
               "computer. Prefer small, verifiable steps; keep the todo tool "

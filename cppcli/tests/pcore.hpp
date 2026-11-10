@@ -13,9 +13,9 @@ namespace matrixcli { namespace pcore {
 
 // Single active session state over the vendored desktop core (lib/ecore).
 struct Core {
-    std::shared_ptr<progressive::desktop::MatrixClient> client;
-    std::shared_ptr<progressive::desktop::SessionStore> store;
-    std::unique_ptr<progressive::desktop::SyncEngine> sync;
+    std::shared_ptr<pcp::desktop::MatrixClient> client;
+    std::shared_ptr<pcp::desktop::SessionStore> store;
+    std::unique_ptr<pcp::desktop::SyncEngine> sync;
     bool storeOk = false;
 };
 
@@ -37,7 +37,7 @@ std::string bootstrap();
 
 // Start the sync loop. Every /sync response is handed to onResponse
 // (used to feed the offline cache).
-void startSync(const std::function<void(const progressive::desktop::FastSyncResponse&)>& onResponse);
+void startSync(const std::function<void(const pcp::desktop::FastSyncResponse&)>& onResponse);
 
 // Stop the sync loop (blocks until the in-flight request finishes).
 void stopSync();
@@ -49,6 +49,6 @@ bool requireSession();
 // Feed the offline cache (matrixcli.db) from a /sync response: room
 // metadata + timeline events. Used by serve (every response) and by the
 // one-shot `sync` command.
-void feedCache(const progressive::desktop::FastSyncResponse& resp);
+void feedCache(const pcp::desktop::FastSyncResponse& resp);
 
 }} // namespace matrixcli::pcore

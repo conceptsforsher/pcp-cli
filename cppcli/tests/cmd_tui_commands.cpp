@@ -182,7 +182,7 @@ void tuiHandleCommand(matrixcli::tui::ChatView& chat,
                     // verification in the chat: the emojis land here, the
                     // match is confirmed with /verify-confirm (cancelled
                     // with /verify-cancel). Uses the ecore session (run
-                    // 'progressive-cli login' once for the crypto identity).
+                    // 'pcp-cli login' once for the crypto identity).
                     std::istringstream ss(args);
                     std::string user, device;
                     ss >> user >> device;

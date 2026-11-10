@@ -4,9 +4,9 @@
 // The backend (go.mau.fi/gomuks) owns the Matrix session and the E2EE
 // keys; this CLI only renders and drives it:
 //
-//   progressive-cli gomuks auth --base-url URL --username U [--password P]
-//   progressive-cli gomuks ping [--timeout N]
-//   progressive-cli gomuks state [--timeout N] [--json]
+//   pcp-cli gomuks auth --base-url URL --username U [--password P]
+//   pcp-cli gomuks ping [--timeout N]
+//   pcp-cli gomuks state [--timeout N] [--json]
 //
 // The session (base URL + gomuks_auth cookie) persists in config.json,
 // same threat model as the stored Matrix access tokens: plaintext on
@@ -58,7 +58,7 @@ int cmdGomuksAuth(const cli::Args& args) {
         if (pass.empty()) pass = promptHidden("Backend password: ");
     }
     if (base.empty() || user.empty() || pass.empty()) {
-        std::cerr << "Usage: progressive-cli gomuks auth --base-url URL "
+        std::cerr << "Usage: pcp-cli gomuks auth --base-url URL "
                      "--username U --password P [--interactive]"
                   << std::endl;
         return 1;
@@ -88,7 +88,7 @@ int cmdGomuksAuth(const cli::Args& args) {
 
 int cmdGomuks(const cli::Args& args) {
     if (args.positional.empty()) {
-        std::cerr << "Usage: progressive-cli gomuks <auth|ping|state>"
+        std::cerr << "Usage: pcp-cli gomuks <auth|ping|state>"
                   << std::endl;
         return 1;
     }

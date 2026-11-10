@@ -163,7 +163,7 @@ void demoAccountsShowcase() {
     const char* a = ANSI_BOLD "\033[37m";
     const char* d = ANSI_DIM;
     const char* r = ANSI_RESET;
-    std::cout << "Multi-account demo — " << a << "progressive-cli accounts" << r << "\n\n"
+    std::cout << "Multi-account demo — " << a << "pcp-cli accounts" << r << "\n\n"
               << "Lists every logged-in Matrix account the client knows about "
                  "(the vendored session store),\nmarks the one you are using now "
                  "as " << a << "[active]" << r << ", and lets you hide accounts "
@@ -190,7 +190,7 @@ void demoAccountsShowcase() {
               << "    {\"user_id\":\"@carol:matrix.org\",\"device_id\":\"CAROLXS\",\n"
               << "     \"homeserver_url\":\"https://matrix.org\",\"active\":false,\"hidden\":true}\n"
               << "  ]\n\n"
-              << "Run " << a << "progressive-cli accounts" << r
+              << "Run " << a << "pcp-cli accounts" << r
               << " to see your real accounts, or " << a << "login" << r
               << " to add one.\n";
 }
@@ -200,7 +200,7 @@ int cmdDemoRepl(const matrixcli::cli::Args& args) {
     // Load the user config so demo-local toggles (e.g. fuzzy_layout) apply.
     try { Config::instance().load("config.json"); } catch (...) {}
     // Pure CLI mode: populate the demo DB and exit — the user then runs the
-    // normal one-shot commands (progressive-cli rooms / view / send / search).
+    // normal one-shot commands (pcp-cli rooms / view / send / search).
     auto runPureCli = []() {
         db::Database dbi;
         if (!dbi.open("matrixcli-demo.db")) return 1;
@@ -209,9 +209,9 @@ int cmdDemoRepl(const matrixcli::cli::Args& args) {
         // to delete matrixcli.db by hand.
         populateDemoData(dbi);
         std::cout << "Demo data ready. Use the one-shot commands:\n"
-                     "  progressive-cli rooms\n"
-                     "  progressive-cli view \"#general\" 10\n"
-                     "  progressive-cli send \"#general\" \"hello\"\n";
+                     "  pcp-cli rooms\n"
+                     "  pcp-cli view \"#general\" 10\n"
+                     "  pcp-cli send \"#general\" \"hello\"\n";
         return 0;
     };
     // The positional shortcuts: demo tui | ui | mobile | cli | markdown | vote
@@ -516,7 +516,7 @@ int cmdDemoRepl(const matrixcli::cli::Args& args) {
                      "  1) interactive session (type commands at a prompt)\n"
                      "  2) populate demo data and exit (one-shot commands)\n"
                      "  3) ASCII client interface (rooms | chat | members)\n"
-                     "     (non-interactive: progressive-cli demo --ui --static)\n"
+                     "     (non-interactive: pcp-cli demo --ui --static)\n"
                      "  4) terminal UI (ncurses TUI)\n"
                      "  5) ASCII client for smartphones (stacked, portrait)\n"
                      "  6) " << g << "markdown" << r << " rendering demo (demo markdown)\n"
@@ -623,7 +623,7 @@ int cmdDemoRepl(const matrixcli::cli::Args& args) {
 
     const char* g = ANSI_BOLD "\033[37m";
     const char* r = ANSI_RESET;
-    std::cout << "progressive-cli demo — interactive mode (offline, no account needed)" << std::endl;
+    std::cout << "pcp-cli demo — interactive mode (offline, no account needed)" << std::endl;
     std::cout << "Commands: help | rooms | view <room> [n] | info <room> | power <room> |"
               << " search <query> | send <room> <text> | attach <room> <file> |\n"
               << "          ui | clear | quit | " << g << "markdown" << r << " | " << g << "vote" << r << " | " << g << "accounts" << r

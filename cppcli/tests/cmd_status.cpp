@@ -104,12 +104,12 @@ int cmdStatus(const matrixcli::cli::Args& args) {
         std::cout << ANSI_CYAN "\n  ── E2EE ──\n" ANSI_RESET;
         std::cout << "  Device keys: " << (e2ee ? ANSI_GREEN "● ready" ANSI_RESET : "○ not initialized") << std::endl;
         std::cout << ANSI_CYAN "\n  ── Sync ──\n" ANSI_RESET;
-        std::cout << "  Status:     " << (synced ? ANSI_GREEN "● synced" ANSI_RESET : "○ not synced — run 'progressive-cli serve'") << std::endl;
+        std::cout << "  Status:     " << (synced ? ANSI_GREEN "● synced" ANSI_RESET : "○ not synced — run 'pcp-cli serve'") << std::endl;
         std::cout << ANSI_CYAN "\n  ── Cache ──\n" ANSI_RESET;
         std::cout << "  Rooms:      " << rooms_c << std::endl;
         std::cout << "  Messages:   " << msgs_c << std::endl;
         std::cout << "  Unread:     " << notif_c << std::endl;
-        std::cout << "\n  • Run " ANSI_BOLD "progressive-cli serve" ANSI_RESET " to sync messages into the cache\n";
+        std::cout << "\n  • Run " ANSI_BOLD "pcp-cli serve" ANSI_RESET " to sync messages into the cache\n";
         return 0;
     }
 
@@ -308,8 +308,8 @@ int cmdStatus(const matrixcli::cli::Args& args) {
         std::cout << "Homeserver: " << Config::instance().homeserverURL() << std::endl;
         std::cout << "Device ID: " << Config::instance().deviceId() << std::endl;
     } else {
-        std::cout << "\n  Not logged in. Use 'progressive-cli login' to authenticate.\n";
-        std::cout << "  Or try offline demo: progressive-cli demo populate\n";
+        std::cout << "\n  Not logged in. Use 'pcp-cli login' to authenticate.\n";
+        std::cout << "  Or try offline demo: pcp-cli demo populate\n";
     }
 
     // Smart suggestions
@@ -318,14 +318,14 @@ int cmdStatus(const matrixcli::cli::Args& args) {
         bool synced = !acc.next_batch.empty();
         int notif = dbi.getNotificationCount();
         if (!synced && acc.is_logged_in())
-            std::cout << "  • Run " ANSI_BOLD "progressive-cli serve" ANSI_RESET " to start syncing\n";
+            std::cout << "  • Run " ANSI_BOLD "pcp-cli serve" ANSI_RESET " to start syncing\n";
         if (notif > 0)
-            std::cout << "  • " << notif << " unread — " ANSI_BOLD "progressive-cli view room" ANSI_RESET " to read\n";
+            std::cout << "  • " << notif << " unread — " ANSI_BOLD "pcp-cli view room" ANSI_RESET " to read\n";
         if (g_tdlib.isAvailable() && g_tdlib.authState() != tdlib::TdAuthState::Ready)
             std::cout << "  • TDLib ready — " ANSI_BOLD "matrixcli td login" ANSI_RESET " for Telegram\n";
         if (!g_lemmy.isLoggedIn())
             std::cout << "  • Lemmy available — " ANSI_BOLD "matrixcli lemmy login" ANSI_RESET "\n";
-        std::cout << "  • All commands: " ANSI_BOLD "progressive-cli --help" ANSI_RESET "\n";
+        std::cout << "  • All commands: " ANSI_BOLD "pcp-cli --help" ANSI_RESET "\n";
     }
     }; // end printStatus lambda
 
@@ -369,8 +369,8 @@ int cmdStatus(const matrixcli::cli::Args& args) {
 
     if (rooms.empty()) {
         std::cout << "No rooms in cache." << std::endl;
-        std::cout << "  For demo:   progressive-cli demo    (start demo server, then try again)" << std::endl;
-        std::cout << "  For real:   progressive-cli login   (login to Matrix first)" << std::endl;
+        std::cout << "  For demo:   pcp-cli demo    (start demo server, then try again)" << std::endl;
+        std::cout << "  For real:   pcp-cli login   (login to Matrix first)" << std::endl;
         return 0;
     }
     for (auto& r : rooms) {
@@ -417,7 +417,7 @@ int cmdStatus(const matrixcli::cli::Args& args) {
 }int cmdSendMsg(const matrixcli::cli::Args& args) {
     using namespace matrixcli;
     if (args.positional.size() < 2) {
-        std::cerr << "Usage: progressive-cli send <room> [--thread event_id] <message>" << std::endl;
+        std::cerr << "Usage: pcp-cli send <room> [--thread event_id] <message>" << std::endl;
         return 1;
     }
     std::string query = args.positional[0];
@@ -480,7 +480,7 @@ int cmdStatus(const matrixcli::cli::Args& args) {
     if (!dbi.open("matrixcli.db")) return 1;
     auto acc = dbi.loadAccount();
     if (!acc.is_logged_in()) {
-        std::cerr << "Not logged in. Run 'progressive-cli login' first." << std::endl;
+        std::cerr << "Not logged in. Run 'pcp-cli login' first." << std::endl;
         return 1;
     }
     client.setHomeserverURL(acc.homeserver_url);
@@ -521,7 +521,7 @@ int cmdStatus(const matrixcli::cli::Args& args) {
 }int cmdSearch(const matrixcli::cli::Args& args) {
     using namespace matrixcli;
     if (args.positional.empty()) {
-        std::cerr << "Usage: progressive-cli search <query> [--limit N|all]" << std::endl;
+        std::cerr << "Usage: pcp-cli search <query> [--limit N|all]" << std::endl;
         return 1;
     }
     std::string query = args.positional[0];
@@ -538,7 +538,7 @@ int cmdStatus(const matrixcli::cli::Args& args) {
     auto results = dbi.search(query, limit > 0 ? limit : 999999);
     if (results.empty()) {
         std::cout << "No results for: " << query << std::endl;
-        std::cout << "(Indexed during sync. Start: progressive-cli serve, then sync populates FTS)" << std::endl;
+        std::cout << "(Indexed during sync. Start: pcp-cli serve, then sync populates FTS)" << std::endl;
         return 0;
     }
     std::cout << results.size() << " results for \"" << query << "\":" << std::endl;

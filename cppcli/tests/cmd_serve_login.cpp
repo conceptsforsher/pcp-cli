@@ -104,7 +104,7 @@ int cmdServe(const matrixcli::cli::Args& args) {
         } catch (const std::exception& e) {
             std::cerr << "Error: " << e.what() << std::endl;
             std::cerr << "  Is the port already in use? Try a different one:"
-                      << " progressive-cli serve --ttys --port <other>" << std::endl;
+                      << " pcp-cli serve --ttys --port <other>" << std::endl;
             return 1;
         }
         std::cout << "ttys server running on http://" << bindAddr << ":" << port
@@ -143,7 +143,7 @@ int cmdServe(const matrixcli::cli::Args& args) {
 
         // Feed the offline cache from every /sync response (the bridge keeps
         // view/rooms/search/API working on the legacy db::Database store).
-        pcore::startSync([](const progressive::desktop::FastSyncResponse& resp) {
+        pcore::startSync([](const pcp::desktop::FastSyncResponse& resp) {
             pcore::feedCache(resp);
         });
         util::Logger::instance().info("Background sync started (vendored desktop core)");
@@ -158,7 +158,7 @@ int cmdServe(const matrixcli::cli::Args& args) {
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
         std::cerr << "  Is the port already in use? Try a different one:"
-                  << " progressive-cli serve --port <other>" << std::endl;
+                  << " pcp-cli serve --port <other>" << std::endl;
         pcore::stopSync();
         return 1;
     }
@@ -204,11 +204,11 @@ int cmdServe(const matrixcli::cli::Args& args) {
         auto& core = pcore::core();
         std::string resolvedHs = homeserver;
         while (!resolvedHs.empty() && resolvedHs.back() == '/') resolvedHs.pop_back();
-        progressive::desktop::AccountInfo staged;
+        pcp::desktop::AccountInfo staged;
         staged.homeserverUrl = resolvedHs;
         staged.accessToken = at_it->second;
         core.client->setAccount(staged);
-        auto who = progressive::desktop::httpGet(
+        auto who = pcp::desktop::httpGet(
             resolvedHs + "/_matrix/client/v3/account/whoami",
             {{"Authorization", "Bearer " + at_it->second}}, 15000);
         if (!who.success || who.statusCode != 200) {
@@ -314,7 +314,7 @@ int cmdServe(const matrixcli::cli::Args& args) {
             std::cerr << "SSO login failed." << std::endl;
             return 1;
         }
-        progressive::desktop::AccountInfo staged;
+        pcp::desktop::AccountInfo staged;
         staged.homeserverUrl = resolvedHs;
         staged.accessToken = r.access_token;
         staged.userId = r.user_id;
@@ -433,7 +433,7 @@ int cmdServe(const matrixcli::cli::Args& args) {
             }
             resolvedHs = disc.data;
         }
-        progressive::desktop::AccountInfo staged;
+        pcp::desktop::AccountInfo staged;
         staged.homeserverUrl = resolvedHs;
         core.client->setAccount(staged);
 
@@ -599,13 +599,13 @@ int cmdServe(const matrixcli::cli::Args& args) {
     matrix::Client client;
     client.setHomeserverURL(homeserver);
     // Route the legacy client through the same proxy as the core (if set).
-    extern bool activeProxyConfig(progressive::desktop::ProxyConfig* out);
-    progressive::desktop::ProxyConfig activeProxy;
+    extern bool activeProxyConfig(pcp::desktop::ProxyConfig* out);
+    pcp::desktop::ProxyConfig activeProxy;
     if (activeProxyConfig(&activeProxy)) {
         http::ProxyConfig legacyProxy;
         legacyProxy.host = activeProxy.host;
         legacyProxy.port = activeProxy.port;
-        legacyProxy.type = (activeProxy.type == progressive::desktop::ProxyConfig::Type::Http)
+        legacyProxy.type = (activeProxy.type == pcp::desktop::ProxyConfig::Type::Http)
                                ? http::ProxyType::HTTP : http::ProxyType::SOCKS5;
         legacyProxy.username = activeProxy.username;
         legacyProxy.password = activeProxy.password;

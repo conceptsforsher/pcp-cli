@@ -27,7 +27,7 @@ This box has exactly **4 CPU cores**. Never run more than `-j3` for ninja/make, 
 
 ## Dependencies
 
-- `progressive-core` is fetched as a prebuilt artifact (`progressive-core-artifact`);
-  edits to `build/_deps/progressive-core-src` do NOT relink into the CLI. Put
+- `pcp-core` is fetched as a prebuilt artifact (`pcp-core-artifact`);
+  edits to `build/_deps/pcp-core-src` do NOT relink into the CLI. Put
   runtime logic in `cppcli/` (our own `lib/` + `src/`), not in the vendored core,
   unless the core is being rebuilt from source on purpose.

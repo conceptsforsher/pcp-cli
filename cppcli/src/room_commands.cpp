@@ -9,7 +9,7 @@
 #include "../lib/database/db.hpp"
 #include "../lib/matrix/client.hpp"
 #include "../lib/util/string_utils.hpp"
-#include <progressive/markdown.hpp>
+#include <pcp/markdown.hpp>
 #include <nlohmann/json.hpp>
 #include <algorithm>
 #include <atomic>
@@ -57,7 +57,7 @@ int cmdSync(const cli::Args& args) {
     std::string note = pcore::bootstrap();
     if (!note.empty() && !json_out) std::cerr << "Warning: " << note << std::endl;
 
-    pcore::startSync([done, roomsSeen, eventsSeen](const progressive::desktop::FastSyncResponse& resp) {
+    pcore::startSync([done, roomsSeen, eventsSeen](const pcp::desktop::FastSyncResponse& resp) {
         pcore::feedCache(resp);
         roomsSeen->fetch_add((int)resp.joinedRooms.size());
         eventsSeen->fetch_add(resp.totalTimelineEvents);
@@ -92,7 +92,7 @@ int cmdSync(const cli::Args& args) {
 int cmdDevices(const cli::Args& args) {
     if (!pcore::requireSession()) return 1;
     if (args.positional.empty() || args.positional[0] != "delete" || args.positional.size() < 2) {
-        std::cerr << "Usage: progressive-cli devices delete <deviceId> --password <pw>" << std::endl;
+        std::cerr << "Usage: pcp-cli devices delete <deviceId> --password <pw>" << std::endl;
         return 1;
     }
     std::string password = args.options.count("password") ? args.options.at("password") : "";
@@ -115,7 +115,7 @@ int cmdModerate(const cli::Args& args) {
     if (!pcore::requireSession()) return 1;
     std::string sub = args.command;  // kick | ban | unban
     if (args.positional.size() < 2) {
-        std::cerr << "Usage: progressive-cli " << sub << " <room> <@user> [--reason r]" << std::endl;
+        std::cerr << "Usage: pcp-cli " << sub << " <room> <@user> [--reason r]" << std::endl;
         return 1;
     }
     std::string room = resolveRoom(args.positional[0]);
@@ -142,7 +142,7 @@ int cmdModerate(const cli::Args& args) {
 int cmdProfile(const cli::Args& args) {
     if (!pcore::requireSession()) return 1;
     if (args.positional.empty()) {
-        std::cerr << "Usage: progressive-cli profile <@user:server>" << std::endl;
+        std::cerr << "Usage: pcp-cli profile <@user:server>" << std::endl;
         return 1;
     }
     auto r = pcore::core().client->getUserProfile(args.positional[0]);
@@ -169,7 +169,7 @@ int cmdProfile(const cli::Args& args) {
 int cmdMembers(const cli::Args& args) {
     if (!pcore::requireSession()) return 1;
     if (args.positional.empty()) {
-        std::cerr << "Usage: progressive-cli members <room>" << std::endl;
+        std::cerr << "Usage: pcp-cli members <room>" << std::endl;
         return 1;
     }
     std::string room = resolveRoom(args.positional[0]);
@@ -207,7 +207,7 @@ int cmdMembers(const cli::Args& args) {
 int cmdPowerEdit(const cli::Args& args) {
     if (!pcore::requireSession()) return 1;
     if (args.positional.size() < 2) {
-        std::cerr << "Usage: progressive-cli power <set|user|event|reset> <room> ...\n";
+        std::cerr << "Usage: pcp-cli power <set|user|event|reset> <room> ...\n";
         return 1;
     }
     const std::string& sub = args.positional[0];
@@ -252,7 +252,7 @@ int cmdPowerEdit(const cli::Args& args) {
         std::cout << "Resetting power levels to recommended defaults…" << std::endl;
     } else if (sub == "set") {
         if (args.positional.size() < 4) {
-            std::cerr << "Usage: progressive-cli power set <room> <key> <level>\n"
+            std::cerr << "Usage: pcp-cli power set <room> <key> <level>\n"
                          "  keys: invite kick ban redact state_default events_default users_default notify\n";
             return 1;
         }
@@ -264,7 +264,7 @@ int cmdPowerEdit(const cli::Args& args) {
         std::cout << "Setting " << key << " = " << lvl << "\n";
     } else if (sub == "user") {
         if (args.positional.size() < 4) {
-            std::cerr << "Usage: progressive-cli power user <room> <@user> <level>\n";
+            std::cerr << "Usage: pcp-cli power user <room> <@user> <level>\n";
             return 1;
         }
         int lvl;
@@ -273,7 +273,7 @@ int cmdPowerEdit(const cli::Args& args) {
         std::cout << "Setting power level of " << args.positional[2] << " = " << lvl << "\n";
     } else if (sub == "event") {
         if (args.positional.size() < 4) {
-            std::cerr << "Usage: progressive-cli power event <room> <type> <level>\n";
+            std::cerr << "Usage: pcp-cli power event <room> <type> <level>\n";
             return 1;
         }
         int lvl;
@@ -294,7 +294,7 @@ int cmdPowerEdit(const cli::Args& args) {
 
 int cmdPower(const cli::Args& args) {
     if (args.positional.empty()) {
-        std::cerr << "Usage: progressive-cli power <room>" << std::endl;
+        std::cerr << "Usage: pcp-cli power <room>" << std::endl;
         return 1;
     }
     // Editing subcommands (power set/user/event/reset) PUT m.room.power_levels.
@@ -418,7 +418,7 @@ int cmdPower(const cli::Args& args) {
 int cmdThreads(const cli::Args& args) {
     if (!pcore::requireSession()) return 1;
     if (args.positional.empty()) {
-        std::cerr << "Usage: progressive-cli threads <room> [--limit N]" << std::endl;
+        std::cerr << "Usage: pcp-cli threads <room> [--limit N]" << std::endl;
         return 1;
     }
     std::string room = resolveRoom(args.positional[0]);
@@ -436,7 +436,7 @@ int cmdThreads(const cli::Args& args) {
 int cmdSearchPublic(const cli::Args& args) {
     if (!pcore::requireSession()) return 1;
     if (args.positional.empty()) {
-        std::cerr << "Usage: progressive-cli search-public <query> [--server hs]" << std::endl;
+        std::cerr << "Usage: pcp-cli search-public <query> [--server hs]" << std::endl;
         return 1;
     }
     std::string server = args.options.count("server") ? args.options.at("server") : "";
@@ -465,12 +465,12 @@ int cmdSearchPublic(const cli::Args& args) {
 }
 
 // Render markdown to HTML with the vendored desktop renderer
-// (progressive::markdownToHtml from lib/ecore/native/markdown.cpp).
+// (pcp::markdownToHtml from lib/ecore/native/markdown.cpp).
 //   matrixcli markdown <text>          — positional text
 //   echo <text> | matrixcli markdown   — stdin pipe
 //   --json — {html, input}; --no-tables/--no-links/--no-code/--no-scroll
 int cmdMarkdown(const cli::Args& args) {
-    progressive::MdConfig cfg;
+    pcp::MdConfig cfg;
     if (args.options.count("no-tables")) cfg.enableTables = false;
     if (args.options.count("no-links")) cfg.enableLinks = false;
     if (args.options.count("no-code")) cfg.enableCodeBlocks = false;
@@ -488,11 +488,11 @@ int cmdMarkdown(const cli::Args& args) {
         while (std::getline(std::cin, line)) { md += line; md += "\n"; }
     }
     if (md.empty()) {
-        std::cerr << "Usage: progressive-cli markdown <text> | echo <text> | matrixcli markdown --json" << std::endl;
+        std::cerr << "Usage: pcp-cli markdown <text> | echo <text> | matrixcli markdown --json" << std::endl;
         return 1;
     }
 
-    std::string html = progressive::markdownToHtml(md, cfg);
+    std::string html = pcp::markdownToHtml(md, cfg);
     if (json_out) {
         nlohmann::json j;
         j["html"] = html;
@@ -521,13 +521,13 @@ int cmdAccounts(const cli::Args& args) {
     // Accounts from the vendored SessionStore (one row per user) + the
     // config.json account (may not be persisted into session.db yet).
     pcore::init();   // ensure the session store is open (accounts needs no session)
-    std::vector<progressive::desktop::AccountInfo> accounts;
+    std::vector<pcp::desktop::AccountInfo> accounts;
     auto& core = pcore::core();
     if (core.storeOk) accounts = core.store->listAccounts();
     bool found_cur = false;
     for (auto& a : accounts) if (a.userId == cur_user && a.deviceId == cur_dev) { found_cur = true; break; }
     if (!found_cur && !cur_user.empty()) {
-        progressive::desktop::AccountInfo a;
+        pcp::desktop::AccountInfo a;
         a.userId = cur_user; a.deviceId = cur_dev; a.homeserverUrl = cur_hs; a.accessToken = cur_tok;
         accounts.push_back(a);
     }
@@ -568,11 +568,11 @@ int cmdAccounts(const cli::Args& args) {
     auto th_it = args.options.find("temporary-hide");
     if (th_it != args.options.end()) tmp_hidden = splitList(th_it->second);
 
-    auto isHidden = [&](const progressive::desktop::AccountInfo& a) {
+    auto isHidden = [&](const pcp::desktop::AccountInfo& a) {
         if (std::find(tmp_hidden.begin(), tmp_hidden.end(), a.userId) != tmp_hidden.end()) return true;
         return std::find(hidden.begin(), hidden.end(), a.userId) != hidden.end();
     };
-    auto isActive = [&](const progressive::desktop::AccountInfo& a) {
+    auto isActive = [&](const pcp::desktop::AccountInfo& a) {
         return !cur_user.empty() && a.userId == cur_user && (cur_dev.empty() || a.deviceId == cur_dev);
     };
 
@@ -592,7 +592,7 @@ int cmdAccounts(const cli::Args& args) {
         return 0;
     }
 
-    if (accounts.empty()) { std::cout << "No accounts. Run 'progressive-cli login'." << std::endl; return 0; }
+    if (accounts.empty()) { std::cout << "No accounts. Run 'pcp-cli login'." << std::endl; return 0; }
     int shown = 0;
     for (auto& a : accounts) {
         if (isHidden(a) && !show_all) continue;
@@ -629,7 +629,7 @@ int cmdCopy(const cli::Args& args) {
         std::cerr << "Cannot open matrixcli.db\n"; return 1;
     }
     if (args.positional.empty()) {
-        std::cerr << "Usage: progressive-cli copy <room> [N] [--preview]\n"
+        std::cerr << "Usage: pcp-cli copy <room> [N] [--preview]\n"
                      "Copies the last N cached messages as plain text"
                      " (default N=20).\n";
         return 1;
@@ -681,7 +681,7 @@ int cmdDump(const cli::Args& args) {
         return 1;
     }
     if (args.positional.empty()) {
-        std::cerr << "Usage: progressive-cli dump <room> [--format json|txt|html|md]"
+        std::cerr << "Usage: pcp-cli dump <room> [--format json|txt|html|md]"
                      " [--out dir] [--limit N] [--parts N]"
                      " [--no-time: no timestamps (txt) / origin_server_ts (json)]\n"
                      "  The export reads the offline cache; the full server-side"
@@ -808,7 +808,7 @@ int cmdDump(const cli::Args& args) {
 int cmdInvite(const cli::Args& args) {
     if (!pcore::requireSession()) return 1;
     if (args.positional.size() < 2) {
-        std::cerr << "Usage: progressive-cli invite <room> <@user> [--reason r]" << std::endl;
+        std::cerr << "Usage: pcp-cli invite <room> <@user> [--reason r]" << std::endl;
         return 1;
     }
     const std::string room = resolveRoom(args.positional[0]);
@@ -838,7 +838,7 @@ void registerRoomCommands() {
     reg.registerCli("threads", cmdThreads, "List room threads: threads <room> [--limit N]");
     reg.registerCli("search-public", cmdSearchPublic, "Search public room directory: search-public <query> [--server hs]");
     reg.registerCli("accounts", cmdAccounts, "List logged-in accounts: accounts [--all] [--json] | --hide <mxid> | --show <mxid> | --temporary-hide <mxid>");
-    reg.registerCli("markdown", cmdMarkdown, "Render markdown to HTML: markdown <text> | echo <text> | progressive-cli markdown");
+    reg.registerCli("markdown", cmdMarkdown, "Render markdown to HTML: markdown <text> | echo <text> | pcp-cli markdown");
     reg.registerCli("dump", cmdDump, "Export a room from the cache: dump <room> [--format json|txt|html|md] [--out dir] [--limit N] [--parts N]");
     reg.registerCli("copy", cmdCopy, "Copy the last N cached messages to the clipboard: copy <room> [N] [--preview]");
     reg.registerCli("invite", cmdInvite, "Invite a user: invite <room> <@user> [--reason r]");
